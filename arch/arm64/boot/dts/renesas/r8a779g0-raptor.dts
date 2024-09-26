@@ -1326,7 +1326,7 @@
 	};
 };
 
-defind PCIE_2CH_2LANE
+define PCIE_2CH_2LANE
 
 #if defined(PCIE_1CH_4LANE)
 /*** 1ch 4lane ***/
