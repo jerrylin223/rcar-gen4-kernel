@@ -1,0 +1,646 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Device Tree Source for the SBC boards with R-Car V4H
+ *
+ * Copyright (C) 2021 Renesas Electronics Corp.
+ */
+
+/dts-v1/;
+#include "r8a779g0-sbc-cpu.dtsi"
+#include <dt-bindings/media/r8a779g0-csi2.h>
+
+/ {
+	model = "Renesas Raptor board based on r8a779g0";
+	compatible = "renesas,raptor-cpu", "renesas,r8a779g0";
+
+	aliases {
+		ethernet0 = &avb0;
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		vdsp0_region: linux,vdsp0_region@5d000000 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x00000000 0x5d000000 0x0 0x00800000>;
+		};
+
+		vdsp1_region: linux,vdsp1_region@5d800000 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x00000000 0x5d800000 0x0 0x00800000>;
+		};
+
+		vdsp2_region: linux,vdsp2_region@5e000000 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x00000000 0x5e000000 0x0 0x00800000>;
+		};
+
+		vdsp3_region: linux,vdsp3_region@5e800000 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x00000000 0x5e800000 0x0 0x00800000>;
+		};
+
+		pap_region: linux,pap_region@5f000000 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x00000000 0x5f000000 0x0 0x00400000>;
+		};
+
+		/* region for cr core application */
+		cr_region: linux,cr_region@60000000 {
+			no-map;
+			reg = <0x00000000 0x60000000 0x0 0x20000000>;
+		};
+
+		/* global autoconfigured region for contiguous allocations */
+		linux,cma@80000000 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x00000000 0x80000000 0x0 0x23000000>;
+			linux,cma-default;
+		};
+
+		region_40bit: linux,region_40bit@600000000 {
+			compatible = "shared-dma-pool";
+			reusable;
+			reg = <0x6 0x00000000 0x0 0x40000000>;
+		};
+	};
+
+	dsi-con0 {
+		compatible = "dsi-connector";
+
+		port {
+			dsi_con_out0: endpoint {
+			remote-endpoint = <&dsi0_out>;
+			};
+		};
+	};
+
+	dsi-con1 {
+		compatible = "dsi-connector";
+
+		port {
+			dsi_con_out1: endpoint {
+			remote-endpoint = <&sn65dsi86_out1>;
+			};
+		};
+	};
+
+	cmem {
+		memory-region = <&vdsp0_region>, <&vdsp1_region>,
+				<&vdsp2_region>, <&vdsp3_region>,
+				<&pap_region>, <&region_40bit>;
+	};
+	
+	ov5647_camera_clk: camera_clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <25000000>;
+		clock-output-names = "xclk";
+	};
+	
+	imx219_camera_clk: imx219_camera_clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <24000000>;
+		clock-output-names = "xclk";
+	};
+};
+
+&pfc {
+	vddq_eth_pins: vddq_eth {
+		pins_pwr {
+			pins = "GP_4_0", "GP_5_0", "GP_6_0","GP_7_0";
+			power-source = <3300>;
+		};
+	};
+
+	avb0_pins: avb0 {
+		mux {
+			groups = "avb0_link", "avb0_mdio", "avb0_rgmii",
+				 "avb0_txcrefclk";
+			function = "avb0";
+		};
+
+		pins_mdio {
+			groups = "avb0_mdio";
+			drive-strength = <21>;
+		};
+
+		pins_mii {
+			groups = "avb0_rgmii";
+			drive-strength = <21>;
+		};
+
+	};
+
+	i2c0_pins: i2c0 {
+		groups = "i2c0";
+		function = "i2c0";
+	};
+	
+	i2c1_pins: i2c1 {
+		groups = "i2c1";
+		function = "i2c1";
+	};
+	
+	i2c2_pins: i2c2 {
+		groups = "i2c2";
+		function = "i2c2";
+	};
+	
+	i2c3_pins: i2c3 {
+		groups = "i2c3";
+		function = "i2c3";
+	};
+
+	i2c4_pins: i2c4 {
+		groups = "i2c4";
+		function = "i2c4";
+	};
+
+
+	canfd3_pins: canfd3 {
+		groups = "canfd3_data";
+		function = "canfd3";
+	};
+
+	canfd4_pins: canfd4 {
+		groups = "canfd4_data";
+		function = "canfd4";
+	};
+	
+	msiof0_pins: msiof0 {
+		groups = "msiof0_clk", "msiof0_rxd", "msiof0_txd", "msiof0_sync", "msiof0_ss1";
+		function = "msiof0";
+ 	};
+ 	
+	pwm0_pins: pwm0grp {
+		groups = "pwm0";
+		function = "pwm0";
+	};
+	
+	pwm1_pins: pwm1grp {
+		groups = "pwm1";
+		function = "pwm1";
+	};
+	
+	pwm6_pins: pwm6grp {
+		groups = "pwm6";
+		function = "pwm6";
+	};
+	
+	pwm7_pins: pwm7grp {
+		groups = "pwm7";
+		function = "pwm7";
+	};
+};
+
+/*
+ * Ethernet Function
+ */
+&avb0 {
+	pinctrl-0 = <&avb0_pins>, <&vddq_eth_pins>;
+	pinctrl-names = "default";
+	phy-handle = <&phy0>;
+	tx-internal-delay-ps = <2000>;
+	status = "okay";
+
+	phy0: ethernet-phy@0 {
+		compatible = "ethernet-phy-id0022.1622",
+			     "ethernet-phy-ieee802.3-c22";
+		rxc-skew-ps = <1500>;
+		reg = <0>;
+		interrupt-parent = <&gpio7>;
+		interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
+		reset-gpios = <&gpio7 10 GPIO_ACTIVE_LOW>;
+	};
+};
+
+/*
+ * CANFD Function :
+ * enable canfd channel 3,4
+ */
+&canfd {
+	pinctrl-0 = <&canfd3_pins>, <&canfd4_pins>;
+		pinctrl-names = "default";
+		//renesas,no-can-fd;
+	status = "okay";
+
+	channel3 {
+		status = "okay";
+	};
+
+	channel4 {
+		status = "okay";
+	};
+};
+
+&cmt0 {
+	status = "okay";
+};
+
+&cmt1 {
+	status = "okay";
+};
+
+&cmt2 {
+	status = "okay";
+};
+
+&cmt3 {
+	status = "okay";
+};
+
+&tmu0 {
+	status = "okay";
+};
+
+&tmu1 {
+	status = "okay";
+};
+
+&tmu2 {
+	status = "okay";
+};
+
+&tmu3 {
+	status = "okay";
+};
+
+&tmu4 {
+	status = "okay";
+};
+
+&rwdt {
+	timeout-sec = <60>;
+	status = "okay";
+};
+
+/*
+ * I2C0 Function :
+ * define multiplexer each channel's entry
+ */
+&i2c0 {
+	pinctrl-0 = <&i2c0_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+	clock-frequency = <400000>;
+	
+	U178: i2c0-switch@74 {
+		compatible = "nxp,pca9544";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x74>;
+//		reset-gpios = <&gpio3 15 GPIO_ACTIVE_LOW>;
+
+		i2c0_switch_ch0: i2c@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+		};
+		
+		i2c0_switch_ch1: i2c@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+		};
+		
+		i2c0_switch_ch2: i2c@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+		};
+		
+		i2c0_switch_ch3: i2c@3 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <3>;
+		};		
+	};
+};
+
+&i2c0_switch_ch0 {
+	U54: sn65dsi86@2c {
+		compatible = "ti,sn65dsi86";
+		reg = <0x2c>;
+		dp-connector;
+		clocks = <&ref_clk>;
+		clock-names = "refclk";
+//		no-use-gpio;
+		no-use-scramble;
+		hpd-poll;
+		enable-gpios = <&gpio2 1 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				sn65dsi86_in1: endpoint {
+					remote-endpoint = <&dsi1_out>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				sn65dsi86_out1: endpoint {
+					remote-endpoint = <&dsi_con_out1>;
+				};
+			};
+		};
+	};
+};
+
+/*
+ * I2C1 Function :
+ * enable i2c1 -> J1 (RPi camera)
+ */
+&i2c1 {
+	pinctrl-0 = <&i2c1_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+	clock-frequency = <400000>;
+	
+	ov5647_camera: ov5647@36 {
+		compatible = "ovti,ov5647";
+		reg = <0x36>;
+		clocks = <&ov5647_camera_clk>;
+
+		port@0 {
+			ov5647_camera_out: endpoint {
+				clock-lanes = <0>;
+				data-lanes = <1 2>;
+				remote-endpoint = <&csi40_in>;
+			};
+		};
+	};
+};
+
+/*
+ * I2C2 Function :
+ * enable i2c2 -> J2 (RPi camera)
+ */
+&i2c2 {
+	pinctrl-0 = <&i2c2_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+	clock-frequency = <400000>;
+	
+	imx219_camera: imx219@10 {
+		compatible = "sony,imx219";
+		reg = <0x10>;
+		clocks = <&imx219_camera_clk>;
+		clock-names = "xclk";
+
+		port@0 {
+			imx219_camera_out: endpoint {
+				clock-lanes = <0>;
+				data-lanes = <1 2>;
+				link-frequencies = /bits/ 64 <456000000>;
+				remote-endpoint = <&csi41_in>;
+			};
+		};
+	};
+};
+
+/*
+ * I2C3 Function :
+ * enable i2c3 -> CN7 (RPi 40-pins)
+ */
+&i2c3 {
+	pinctrl-0 = <&i2c3_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+	clock-frequency = <400000>;
+	
+};
+
+/*
+ * I2C4 Function :
+ * enable i2c4 -> CN7 (RPi 40-pins)
+ */
+&i2c4 {
+	pinctrl-0 = <&i2c4_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+	clock-frequency = <400000>;
+	
+};
+
+/*
+ * PCIe Function :
+ * define clk_req and lanes
+ */
+&pcie_bus_clk {
+	clock-frequency = <100000000>;
+};
+
+&pciec0 {
+	reset-gpio = <&gpio2 2 GPIO_ACTIVE_LOW>;
+	num-lanes = <2>;
+	
+	status = "okay";
+};
+
+&pciec1 {
+	reset-gpio = <&gpio2 0 GPIO_ACTIVE_LOW>;
+	num-lanes = <1>;
+	
+	status = "okay";
+};
+
+/*
+ * Display Function
+ * define ref_clk, dsi0, dsi1
+ * DSI0 -> J4
+ * DSI1 -> SN65 -> CN6
+ */
+/* clock for sn65dsi86 */
+&ref_clk {
+	clock-frequency = <38400000>;
+};
+
+&du {
+	status = "okay";
+};
+
+&dsi0 {
+	status = "okay";
+
+	use-extal-clk;
+
+	ports {
+		port@1 {
+			endpoint {
+				remote-endpoint = <&dsi_con_out0>;
+				data-lanes = <1 2 3 4>;
+			};
+		};
+	};
+};
+
+&dsc {
+	status = "okay";
+};
+
+&dsi1 {
+	status = "okay";
+
+	use-extal-clk;
+
+	ports {
+		port@1 {
+			endpoint {
+				remote-endpoint = <&sn65dsi86_in1>;
+				data-lanes = <1 2 3 4>;
+			};
+		};
+	};
+};
+
+&vin00 {
+	status = "okay";
+};
+
+&vin01 {
+	status = "okay";
+};
+
+&vin02 {
+	status = "okay";
+};
+
+&vin03 {
+	status = "okay";
+};
+
+&vin10 {
+	status = "okay";
+};
+
+&vin11 {
+	status = "okay";
+};
+
+&vin12 {
+	status = "okay";
+};
+
+&vin13 {
+	status = "okay";
+};
+
+/* 
+ * Camera Function
+ * csi40 -> J1 (RPi camera)
+ * csi41 -> J2 (RPi camera)
+ */
+&csi40 {
+	status = "okay";
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+
+			csi40_in: endpoint {
+				clock-lanes = <0>;
+				data-lanes = <1 2 3 4>;
+				remote-endpoint = <&ov5647_camera_out>;
+			};
+		};
+	};
+};
+
+&csi41 {
+	status = "okay";
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+
+			csi41_in: endpoint {
+				clock-lanes = <0>;
+				data-lanes = <1 2 3 4>;
+				remote-endpoint = <&imx219_camera_out>;
+			};
+		};
+	};
+};
+
+/*
+ * SPI function : 
+ * enable spi0 with cs0 & cs1
+ */
+&msiof0 {
+	pinctrl-0 = <&msiof0_pins>;
+	pinctrl-names = "default";
+	num-cs = <2>;
+
+	status = "okay";
+ 
+	slavedev1@0 {
+		compatible = "maker,slavedev";
+		reg = <0>;
+		spi-max-frequency = <16666666>;
+		spi-cpha;
+		spi-cpol;
+	};
+	
+	slavedev1@1 {
+		compatible = "maker,slavedev";
+		reg = <1>;
+		spi-max-frequency = <16666666>;
+		spi-cpha;
+		spi-cpol;
+	};	
+};
+
+/*
+ * PWM Function
+ * pwm0 -> J3 (fan)
+ * pwm1,6,7 -> CN7 (RPi 40-pins)
+ */
+&pwm0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm0_pins>;
+	status = "okay";
+};
+
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm1_pins>;
+	status = "okay";
+};
+
+&pwm6 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm6_pins>;
+	status = "okay";
+};
+
+&pwm7 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm7_pins>;
+	status = "okay";
+};
