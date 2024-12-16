@@ -76,7 +76,7 @@
 
 	hdmi-out {
 		compatible = "hdmi-connector";
-		type = "a"
+		type = "a";
 
 		port {
 			hdmi_con: endpoint {
@@ -326,10 +326,8 @@
  * enable canfd channel 0~7
  */
 &canfd {
-	pinctrl-0 = <&canfd0_pins>, <&canfd1_pins>, <&canfd2_pins>,
-		<&canfd3_pins>, <&canfd4_pins>, <&canfd5_pins>,
-		<&canfd6_pins>, <&canfd7_pins>;
-		pinctrl-names = "default";
+	pinctrl-0 = <&canfd0_pins>, <&canfd1_pins>;
+	pinctrl-names = "default";
 	status = "okay";
 
 	channel0 {
@@ -337,30 +335,6 @@
 	};
 
 	channel1 {
-		status = "okay";
-	};
-
-	channel2 {
-		status = "okay";
-	};
-
-	channel3 {
-		status = "okay";
-	};
-
-	channel4 {
-		status = "okay";
-	};
-
-	channel5 {
-		status = "okay";
-	};
-
-	channel6 {
-		status = "okay";
-	};
-
-	channel7 {
 		status = "okay";
 	};
 };
