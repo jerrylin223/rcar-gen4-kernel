@@ -518,15 +518,15 @@
 };
 
 &vin01 {
-	status = "okay";
+	status = "disabled";
 };
 
 &vin02 {
-	status = "okay";
+	status = "disabled";
 };
 
 &vin03 {
-	status = "okay";
+	status = "disabled";
 };
 
 &vin10 {
@@ -534,15 +534,15 @@
 };
 
 &vin11 {
-	status = "okay";
+	status = "disabled";
 };
 
 &vin12 {
-	status = "okay";
+	status = "disabled";
 };
 
 &vin13 {
-	status = "okay";
+	status = "disabled";
 };
 
 /* 
