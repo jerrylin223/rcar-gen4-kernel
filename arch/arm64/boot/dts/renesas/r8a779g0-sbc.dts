@@ -99,6 +99,31 @@
 				<&pap_region>, <&region_40bit>;
 	};
 	
+	msiof_sound: msiof_sound {
+		compatible = "audio-graph-card";
+
+		label = "msiof-sound";
+		dais = <&msiof_snd>;
+	};
+
+	sound_card: sound {
+		compatible = "audio-graph-card";
+
+		label = "rcar-sound";
+		dais = <&rsnd_port0>;
+	};
+
+	max98357a {
+		compatible = "maxim,max98357a";
+		status = "okay";
+
+		port@0 {
+			max98357a_endpoint: endpoint {
+				remote-endpoint = <&rsnd_endpoint>;
+			};
+		};
+	};
+
 	ov5647_camera_clk: camera_clk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
@@ -111,6 +136,33 @@
 		#clock-cells = <0>;
 		clock-frequency = <24000000>;
 		clock-output-names = "xclk";
+	};
+
+	reg_1p8v: regulator-1p8v {
+			compatible = "regulator-fixed";
+			regulator-name = "fixed-1.8V";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-boot-on;
+			regulator-always-on;
+	};
+
+	reg_3p3v: regulator-3p3v {
+			compatible = "regulator-fixed";
+			regulator-name = "fixed-3.3V";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-boot-on;
+			regulator-always-on;
+	};
+
+	reg_5p0v: regulator-5p0v {
+			compatible = "regulator-fixed";
+			regulator-name = "fixed-5.0V";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			regulator-boot-on;
+			regulator-always-on;
 	};
 };
 
@@ -181,6 +233,21 @@
 		groups = "msiof0_clk", "msiof0_rxd", "msiof0_txd", "msiof0_sync", "msiof0_ss1";
 		function = "msiof0";
  	};
+
+	msiof1_pins: msiof1 {
+		groups = "msiof1_clk", "msiof1_rxd", "msiof1_txd", "msiof1_sync";
+		function = "msiof1";
+	};
+
+	sound_pins: sound {
+		groups = "ssi_ctrl", "ssi_data";
+		function = "ssi";
+	};
+
+	sound_clk_pins: sound_clk {
+		groups = "audio_clkin", "audio_clkout";
+		function = "audio_clk";
+	};
  	
 	pwm0_pins: pwm0grp {
 		groups = "pwm0";
@@ -614,6 +681,99 @@
 		spi-cpha;
 		spi-cpol;
 	};	
+};
+
+/*
+ * SSI function :
+ * msiof1 -> DA7212
+ * rcar_sound -> MAX98357A
+ */
+&msiof1 {
+	pinctrl-0 = <&msiof1_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+	compatible = "renesas,msiof_sound-gen3";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+	renesas,tx-fifo-size = <1>;
+	renesas,rx-fifo-size = <1>;
+
+	msiof_snd: port {
+		msiof: endpoint {
+		remote-endpoint = <&da7212_endpoint>;
+		bitclock-master = <&msiof>;
+		frame-master = <&msiof>;
+		dai-format = "i2s";
+		};
+	};
+};
+
+&i2c0_switch_ch1 {
+	da7212: codec@1a {
+		compatible = "dlg,da7212";
+
+		#sound-dai-cells = <0>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		reg = <0x1a>;
+
+		clocks = <&rcar_sound>;
+		clock-names = "mclk";
+
+		dlg,micbias1-lvl = <2500>;
+		dlg,micbias2-lvl = <2500>;
+		dlg,dmic-data-sel = "lrise_rfall";
+		dlg,dmic-samplephase = "between_clkedge";
+		dlg,dmic-clkrate = <3000000>;
+
+		VDDA-supply = <&reg_1p8v>;
+		VDDSP-supply = <&reg_5p0v>;
+		VDDMIC-supply = <&reg_3p3v>;
+		VDDIO-supply = <&reg_3p3v>;
+
+		port@0 {
+			da7212_endpoint: endpoint {
+				remote-endpoint = <&msiof>;
+			};
+		};
+	};
+};
+
+&audio_clkin {
+//	clock-frequency = <22579200>; /* 44.1kHz groups */
+	clock-frequency = <24576000>; /* 48  kHz groups */
+};
+
+&rcar_sound {
+	pinctrl-0 = <&sound_clk_pins>, <&sound_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+
+	/* Single DAI */
+	#sound-dai-cells = <0>;
+
+	/* audio_clkout0 */
+	#clock-cells = <0>;
+//	clock-frequency = <11289600>; /* 44.1kHz groups */
+	clock-frequency = <12288000>; /* 48  kHz groups */
+
+	ports {
+		rsnd_port0: port@0 {
+			rsnd_endpoint: endpoint {
+				remote-endpoint = <&max98357a_endpoint>;
+				dai-format = "i2s";
+				bitclock-master = <&rsnd_endpoint>;
+				frame-master = <&rsnd_endpoint>;
+
+				/* Please use exclusively to the 'capture' */
+				playback = <&ssi0>;
+			};
+		};
+	};
 };
 
 /*

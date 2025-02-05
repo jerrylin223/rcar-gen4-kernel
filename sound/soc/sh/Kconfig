@@ -44,6 +44,14 @@ config SND_SOC_RCAR
 	help
 	  This option enables R-Car SRU/SCU/SSIU/SSI sound support
 
+config SND_SOC_MSIOF
+	tristate "R-Car series MSIOF support"
+	depends on COMMON_CLK
+	depends on OF
+	select SND_DMAENGINE_PCM
+	help
+	  This option enables R-Car MSIOF I2S sound support
+
 ##
 ## Boards
 ##
