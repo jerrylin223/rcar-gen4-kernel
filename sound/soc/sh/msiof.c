@@ -265,7 +265,7 @@ static int msiof_hw_start(struct snd_soc_component *component,
 // SIFCTR
 
 // FIXME
-	if (priv->is_provider || is_play)
+	if (is_play)
 		val = TDREQE | TDMAE;
 	if (!is_play)
 		val = RDREQE | RDMAE;
@@ -284,7 +284,7 @@ static int msiof_hw_start(struct snd_soc_component *component,
 // FIXME
 // 多分 TXE/RXE はラストに書けばいい
 // チェック不要 stop も同様
-	if (priv->is_provider || is_play) {
+	if (is_play) {
 		val = TEDG | TXE;
 //		val = TXE;
 		msiof_update_and_wait(priv, SICTR, val,   val,   val);
