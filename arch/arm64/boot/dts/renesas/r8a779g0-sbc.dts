@@ -73,16 +73,6 @@
 		};
 	};
 
-	dsi-con0 {
-		compatible = "dsi-connector";
-
-		port {
-			dsi_con_out0: endpoint {
-			remote-endpoint = <&dsi0_out>;
-			};
-		};
-	};
-
 	dsi-con1 {
 		compatible = "dsi-connector";
 
@@ -164,6 +154,12 @@
 			regulator-boot-on;
 			regulator-always-on;
 	};
+	
+	backlight: panel-backlight {
+		compatible = "gpio-backlight";
+		gpios = <&gpio1 26 GPIO_ACTIVE_HIGH>;
+		default-on;
+    };
 };
 
 &pfc {
@@ -429,6 +425,21 @@
 	};
 };
 
+&i2c0_switch_ch3 {
+	J4: dsi_panel@0 {
+		reg = <0>;
+		compatible = "raspberrypi,dsi-7inch";
+		reset-gpio = <&gpio0 18 GPIO_ACTIVE_LOW>;
+//		backlight = <&backlight>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&dsi_out>;
+			};
+		};
+	};
+};
+
 /*
  * I2C1 Function :
  * enable i2c1 -> J1 (RPi camera)
@@ -553,9 +564,9 @@
 
 	ports {
 		port@1 {
-			endpoint {
-				remote-endpoint = <&dsi_con_out0>;
-				data-lanes = <1 2 3 4>;
+			dsi_out: endpoint {
+				remote-endpoint = <&panel_in>;
+				data-lanes = <1 2>;
 			};
 		};
 	};
