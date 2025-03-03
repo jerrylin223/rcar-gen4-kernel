@@ -257,7 +257,7 @@
 
 &avb0 {
 	pinctrl-0 = <&avb0_pins>, <&vddq_eth_pins>;
-	pinctrl-names = "default";delay
+	pinctrl-names = "default";
 	phy-handle = <&phy0>;
 	tx-internal-delay-ps = <2000>;
 	rx-internal-delay-ps = <1800>;
