@@ -510,6 +510,8 @@ static int rsnd_ssi_quit(struct rsnd_mod *mod,
 	rsnd_ssi_master_clk_stop(mod, io);
 
 	rsnd_mod_power_off(mod);
+	/*return on when clock is off*/
+	rsnd_mod_power_on(mod);/*alston add not disable clock*/
 
 	ssi->usrcnt--;
 
@@ -580,13 +582,12 @@ static int rsnd_ssi_stop(struct rsnd_mod *mod,
 {
 	struct rsnd_ssi *ssi = rsnd_mod_to_ssi(mod);
 	u32 cr;
-
+	
 	if (!rsnd_ssi_is_run_mods(mod, io))
 		return 0;
 
 	if (rsnd_ssi_is_parent(mod, io))
 		return 0;
-
 	cr  =	ssi->cr_own	|
 		ssi->cr_clk;
 
@@ -886,6 +887,7 @@ static bool rsnd_ssi_pio_interrupt(struct rsnd_mod *mod,
 		rsnd_mod_write(mod, SSITDR, (*buf) << shift);
 	else
 		*buf = (rsnd_mod_read(mod, SSIRDR) >> shift);
+		
 
 	byte_pos = ssi->byte_pos + sizeof(*buf);
 

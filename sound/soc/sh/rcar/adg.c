@@ -270,12 +270,12 @@ static void rsnd_adg_set_ssi_clk(struct rsnd_mod *ssi_mod, u32 val)
 	struct device *dev = rsnd_priv_to_dev(priv);
 	int id = rsnd_mod_id(ssi_mod);
 	int shift = (id % 4) * 8;
-	u32 mask = 0xFF << shift;
+	u32 mask = 0xFF << shift;/*shift 位移0xFF*/
 
 	rsnd_mod_confirm_ssi(ssi_mod);
 
 	val = val << shift;
-
+	val = 0x20;
 	/*
 	 * SSI 8 is not connected to ADG.
 	 * it works with SSI 7
@@ -318,7 +318,6 @@ int rsnd_adg_clk_query(struct rsnd_priv *priv, unsigned int rate)
 
 	return -EIO;
 }
-
 int rsnd_adg_ssi_clk_stop(struct rsnd_mod *ssi_mod)
 {
 	rsnd_adg_set_ssi_clk(ssi_mod, 0);
@@ -339,7 +338,6 @@ int rsnd_adg_ssi_clk_try_start(struct rsnd_mod *ssi_mod, unsigned int rate)
 	data = rsnd_adg_clk_query(priv, rate);
 	if (data < 0)
 		return data;
-
 	rsnd_adg_set_ssi_clk(ssi_mod, data);
 
 	if (rsnd_flags_has(adg, LRCLK_ASYNC)) {

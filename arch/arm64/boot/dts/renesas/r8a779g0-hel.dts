@@ -95,7 +95,11 @@
 		compatible = "audio-graph-card";
 
 		label = "rcar-sound";
+		#ifdef SUPPORT_DA7212
 		dais = <&rsnd_port0>;	/* Audio Codec */
+#else
+		dais = <&rsnd_port0 &rsnd_port1>;	/* Audio Codec */
+#endif
 	};	
 };
 
@@ -434,7 +438,7 @@
 			port@2 {
 				reg = <2>;
 				lt9611_audio_in: endpoint {
-					remote-endpoint = <&rsnd_endpoint>;
+					remote-endpoint = <&rsnd_endpoint0>;
 				};
 			};
 
@@ -475,18 +479,21 @@
 			};
 		};
 	};
-
-	// TODO: fill in AD2428 content
-	U106: ad2428-master@6c {
-		compatible = "adi,ad2428";
-		reg = <0x6c>;
+U106: a2b2428@0x6c {
+         compatible = "adi,a2b24xx";
+         reg = <0x6c>;
+         //reset-gpios = <&lsio_gpio4 16 GPIO_ACTIVE_LOW>; // AD2435_Reset
+         //pinctrl-names = "default";
+         //pinctrl-0 = <&pinctrl_a2b2435>;
+         status = "okay";
+		 
+		port@0 {
+			ad2428_endpoint: endpoint {
+				remote-endpoint = <&rsnd_endpoint1>;
+			};
+		 };
 	};
 
-	// TODO: fill in AD2428 content
-	U107: ad2428-slave@6e {
-		compatible = "adi,ad2428";
-		reg = <0x6e>;
-	};
 
 	U10: io_expander@70 {
 		compatible = "nxp,pca9538";
@@ -1060,8 +1067,8 @@
  * define audio_clkin, rcar_sound and codec
  */
 &audio_clkin {
-	clock-frequency = <22579200>; /* 44.1kHz */
-//	clock-frequency = <24576000>; /* 48.1kHz */
+//	clock-frequency = <22579200>; /* 44.1kHz */
+	clock-frequency = <24576000>; /* 48.1kHz */
 };
 
 &rcar_sound {
@@ -1071,22 +1078,24 @@
 	status = "okay";
 
 	/* Single DAI */
+#ifdef SUPPORT_DA7212
 	#sound-dai-cells = <0>;
+#else
+	#sound-dai-cells = <1>;
+#endif
 
 	/* audio_clkout0 */
 	#clock-cells = <0>;
-	clock-frequency = <11289600>; /* 44.1kHz */
-//	clock-frequency = <12288000>; /* 48  kHz */
+//	clock-frequency = <11289600>; /* 44.1kHz groups */
+	clock-frequency = <12288000>; /* 48  kHz groups */
+	ignore-pmdown-time;
+	keep-clock-always-on;
 
 	ports {
+#ifdef SUPPORT_DA7212
 		rsnd_port0: port@0 {
 			rsnd_endpoint: endpoint {
-#ifdef SUPPORT_AD2428				
-				// TODO: set remote-endpoint to audio codec AD2428
-				//remote-endpoint = <>;
-#else
-				remote-endpoint = <&lt9611_audio_in>;
-#endif
+				remote-endpoint = <&da7212_endpoint>;
 				dai-format = "i2s";
 				bitclock-master = <&rsnd_endpoint>;
 				frame-master = <&rsnd_endpoint>;
@@ -1095,9 +1104,32 @@
 				playback = <&ssi0>;
 			};
 		};
+#else
+		rsnd_port0: port@0 {
+            rsnd_endpoint0: endpoint {
+                remote-endpoint = <&lt9611_audio_in>;
+                dai-format = "i2s";
+                bitclock-master = <&rsnd_endpoint0>;
+                frame-master = <&rsnd_endpoint0>;
+                /* Please use exclusively to the 'capture' */
+                playback = <&ssi0>;
+            };   
+        };
+		rsnd_port1: port@1 {
+           	rsnd_endpoint1: endpoint {
+                remote-endpoint = <&ad2428_endpoint>;
+                dai-format = "i2s";
+                //dai-format = "dsp_a";
+                //dai-tdm-slot-num = <6>;	
+                bitclock-master = <&rsnd_endpoint1>;
+                frame-master = <&rsnd_endpoint1>;
+                // Please use exclusively to the 'capture'
+                playback = <&ssi0>;
+            };
+        };
+#endif
 	};
 };
-
 &vin00 {
 	status = "okay";
 };

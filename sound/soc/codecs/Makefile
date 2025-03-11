@@ -22,6 +22,9 @@ snd-soc-adau1977-objs := adau1977.o
 snd-soc-adau1977-spi-objs := adau1977-spi.o
 snd-soc-adau1977-i2c-objs := adau1977-i2c.o
 snd-soc-adau7002-objs := adau7002.o
+#retronix
+snd-soc-a2b24xx-objs := a2b24xx.o
+#retronix
 snd-soc-adau7118-objs := adau7118.o
 snd-soc-adau7118-i2c-objs := adau7118-i2c.o
 snd-soc-adau7118-hw-objs := adau7118-hw.o
@@ -329,6 +332,9 @@ obj-$(CONFIG_SND_SOC_ADAU1781_SPI)	+= snd-soc-adau1781-spi.o
 obj-$(CONFIG_SND_SOC_ADAU1977)		+= snd-soc-adau1977.o
 obj-$(CONFIG_SND_SOC_ADAU1977_SPI)	+= snd-soc-adau1977-spi.o
 obj-$(CONFIG_SND_SOC_ADAU1977_I2C)	+= snd-soc-adau1977-i2c.o
+#retronix
+obj-$(CONFIG_SND_SOC_A2B24XX)          += snd-soc-a2b24xx.o
+#retronix
 obj-$(CONFIG_SND_SOC_ADAU7002)	+= snd-soc-adau7002.o
 obj-$(CONFIG_SND_SOC_ADAU7118)	+= snd-soc-adau7118.o
 obj-$(CONFIG_SND_SOC_ADAU7118_I2C)	+= snd-soc-adau7118-i2c.o
