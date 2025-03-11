@@ -95,7 +95,7 @@
 		compatible = "audio-graph-card";
 
 		label = "rcar-sound";
-		#ifdef SUPPORT_DA7212
+#ifdef SUPPORT_DA7212
 		dais = <&rsnd_port0>;	/* Audio Codec */
 #else
 		dais = <&rsnd_port0 &rsnd_port1>;	/* Audio Codec */
@@ -137,7 +137,7 @@
 	avb1_pins: avb1 {
 		mux {
 			groups = "avb1_link", "avb1_mdio", "avb1_rgmii",
-			"avb1_txcrefclk";
+				"avb1_txcrefclk";
 			function = "avb1";
 		};
 
@@ -263,14 +263,13 @@
 	pinctrl-0 = <&avb0_pins>, <&vddq_eth_pins>;
 	pinctrl-names = "default";
 	phy-handle = <&phy0>;
-	tx-internal-delay-ps = <2000>;
 	rx-internal-delay-ps = <1800>;
+	tx-internal-delay-ps = <2000>;
 	status = "okay";
 
 	phy0: ethernet-phy@0 {
 		compatible = "ethernet-phy-id0022.1642",
 			     "ethernet-phy-ieee802.3-c22";
-		rxc-skew-ps = <1500>;
 		reg = <0>;
 		interrupt-parent = <&gpio7>;
 		interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
@@ -282,6 +281,7 @@
 	pinctrl-0 = <&avb1_pins>, <&vddq_eth_pins>;
 	pinctrl-names = "default";
 	phy-handle = <&phy1>;
+	rx-internal-delay-ps = <1800>;
 	tx-internal-delay-ps = <2000>;
 	status = "okay";
 	phy-reset-gpios = <&gpio6 1 GPIO_ACTIVE_LOW>;
@@ -289,7 +289,6 @@
 	phy1: ethernet-phy@1 {
 		compatible = "ethernet-phy-id0022.1642",
 			     "ethernet-phy-ieee802.3-c22";
-		rxc-skew-ps = <1500>;
 		reg = <0>;
 		interrupt-parent = <&gpio6>;
 		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
@@ -500,6 +499,47 @@ U106: a2b2428@0x6c {
 		reg = <0x70>;
 		gpio-controller;
 		#gpio-cells = <2>;
+		gpio-line-names = "PWDNB_A      ", "FRSYNC_A     ", "ERRB_A       ", "LOCK_A       ", "CSI0_MFP7    ", "96724_GPIO2_A", "96724_GPIO3_A", "CSI0_MFP8    ";
+	};
+
+	U27: io_expander@71 {
+		compatible = "nxp,pca9538";
+		reg = <0x71>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		gpio-line-names = "PCIE_SW_RST    ", "PCIE_CN_RST_SOC", "E5V_EN_SOC     ", "CP169          ", "D3V3_CSI_EN_SOC", "P3V3_M2_EN_SOC ", "P3V3_EN_SOC    ", "D3V3_DSI_EN_SOC";
+
+		e5.0v-en-soc {
+			gpio-hog;
+			gpios = <2 GPIO_ACTIVE_HIGH>;
+			output-high;
+		};
+
+		cp169 {
+			gpios = <3 GPIO_ACTIVE_HIGH>;
+			output-high;
+		};
+
+		p3.3v-m2-en-soc {
+			gpio-hog;
+			gpios = <5 GPIO_ACTIVE_HIGH>;
+			output-high;
+		};
+
+		p3.3v-en-soc {
+			gpio-hog;
+			gpios = <6 GPIO_ACTIVE_HIGH>;
+			output-high;
+		};
+
+	};
+
+	U20: io_expander@72 {
+		compatible = "nxp,pca9538";
+		reg = <0x72>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		gpio-line-names = "PWDNB_GMSLOUT", "MFP0_GMSLOUT ", "MFP1_GMSLOUT ", "MFP2_GMSLOUT ", "MFP3_GMSLOUT ", "CP134        ", "CP133        ", "CP132        ";
 	};
 
 	U16: io_expander@73 {
@@ -507,20 +547,7 @@ U106: a2b2428@0x6c {
 		reg = <0x73>;
 		gpio-controller;
 		#gpio-cells = <2>;
-	};
-
-	U20: io_expander@71 {
-		compatible = "nxp,pca9538";
-		reg = <0x71>;
-		gpio-controller;
-		#gpio-cells = <2>;
-	};
-	
-	U27: io_expander@72 {
-		compatible = "nxp,pca9538";
-		reg = <0x72>;
-		gpio-controller;
-		#gpio-cells = <2>;
+		gpio-line-names = "PWDNB_B      ", "FRSYNC_B     ", "ERRB_A       ", "LOCK_B       ", "CSI1_MFP7    ", "96724_GPIO2_B", "96724_GPIO3_B", "CSI1_MFP8    ";
 	};
 };
 
@@ -865,6 +892,7 @@ U106: a2b2428@0x6c {
 		reg = <0x70>;
 		gpio-controller;
 		#gpio-cells = <2>;
+		gpio-line-names = "PG_DSI       ", "PG_CSI       ", "PG_PCIE_0.95V", "PG_PCIE_1.8V ", "PG_R3.3V     ", "PG_R2.5V     ", "CAN0_WAKE    ", "CAN1_WAKE    ";
 	};
 
 	U93: io_expander@73 {
@@ -872,6 +900,7 @@ U106: a2b2428@0x6c {
 		reg = <0x73>;
 		gpio-controller;
 		#gpio-cells = <2>;
+		gpio-line-names = "PG_PCI11400_3V3", "PG_PCI11400_1V1", "PG_PCI11400_2V5", "CP167          ", "PG_R0.9V       ", "CP100          ", "CP101          ", "CP102          ";
 	};
 };
 
@@ -881,6 +910,14 @@ U106: a2b2428@0x6c {
 		reg = <0x70>;
 		gpio-controller;
 		#gpio-cells = <2>;
+		gpio-line-names = "USB5V_EN_SOC ", "IO_PCIE_CWAKE", "IO_PCIE_BP   ", "CP30         ", "CP32         ", "CP33         ", "CP35         ", "CP37         ";
+
+
+		usb5.0v-en-soc {
+			gpio-hog;
+			gpios = <0 GPIO_ACTIVE_HIGH>;
+			output-high;
+		};
 	};
 };
 
@@ -1130,6 +1167,7 @@ U106: a2b2428@0x6c {
 #endif
 	};
 };
+
 &vin00 {
 	status = "okay";
 };
