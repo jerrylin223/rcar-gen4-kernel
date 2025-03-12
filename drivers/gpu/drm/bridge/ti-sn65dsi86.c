@@ -231,7 +231,7 @@ static int __maybe_unused ti_sn_bridge_suspend(struct device *dev)
 }
 
 static const struct dev_pm_ops ti_sn_bridge_pm_ops = {
-	SET_RUNTIME_PM_OPS(ti_sn_bridge_suspend, ti_sn_bridge_resume, NULL)
+//	SET_RUNTIME_PM_OPS(ti_sn_bridge_suspend, ti_sn_bridge_resume, NULL)
 	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
 				pm_runtime_force_resume)
 };
@@ -1382,6 +1382,7 @@ static int ti_sn_bridge_probe(struct i2c_client *client,
 			ret = PTR_ERR(pdata->enable_gpio);
 			return ret;
 		}
+		gpiod_set_value(pdata->enable_gpio, 1);
 	}
 
 	if (of_find_property(pdata->dev->of_node, "no-use-scramble", NULL))

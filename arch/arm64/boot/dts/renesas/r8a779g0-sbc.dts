@@ -358,11 +358,11 @@
 	status = "okay";
 	clock-frequency = <400000>;
 	
-	U178: i2c0-switch@74 {
+	U39: i2c0-switch@71 {
 		compatible = "nxp,pca9544";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		reg = <0x74>;
+		reg = <0x71>;
 //		reset-gpios = <&gpio3 15 GPIO_ACTIVE_LOW>;
 
 		i2c0_switch_ch0: i2c@0 {
@@ -568,7 +568,7 @@
 };
 
 &dsi0 {
-	status = "okay";
+	status = "disabled";//"okay";
 
 	use-extal-clk;
 
