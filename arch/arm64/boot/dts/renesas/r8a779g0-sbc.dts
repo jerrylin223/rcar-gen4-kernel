@@ -538,6 +538,22 @@
 	clock-frequency = <100000000>;
 };
 
+&gpio4 {
+	pcie0-clkreq-hog {
+		gpio-hog;
+		gpios = <21 GPIO_ACTIVE_LOW>;
+		output-high;
+		line-name = "PCIE0_CLKREQ_N";
+	};
+
+	pcie1-clkreq-hog {
+		gpio-hog;
+		gpios = <22 GPIO_ACTIVE_LOW>;
+		output-high;
+		line-name = "PCIE1_CLKREQ_N";
+	};
+};
+
 &pciec0 {
 	reset-gpio = <&gpio2 2 GPIO_ACTIVE_LOW>;
 	num-lanes = <2>;
