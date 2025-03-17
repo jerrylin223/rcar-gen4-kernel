@@ -32,6 +32,7 @@
 #ifdef A2B_SETUP_ALSA
 //#include "adi_a2b_commandlist.h"
 #include "adi_a2b_commandlist_slave_0123.h"
+
 #endif
 #include "a2b24xx.h"
 
@@ -150,27 +151,13 @@ static void adi_a2b_NetworkSetup(struct device *dev)
 	static unsigned char aDataBuffer[6000];
 	static unsigned char aDataWriteReadBuf[4u];
 	unsigned int nDelayVal ,config_line;
-	if (custom_mode ==1)
-	{
-	config_line=CONFIG_LEN_TEST;
-	}
-	else
-	{
-	config_line=CONFIG_LEN;
-	}
+	config_line = (custom_mode == 1) ? CONFIG_LEN_TEST : CONFIG_LEN;
 	/* Loop over all the configuration */
 	if(enble <2)
 	{
 		for (nIndex = 0; nIndex < config_line; nIndex++)
 		{
-			if (custom_mode ==1)
-			{
-			pOPUnit = &gaA2BConfig_test[nIndex];
-			}
-			else
-			{
-			pOPUnit = &gaA2BConfig[nIndex];
-			}
+			pOPUnit = (custom_mode == 1) ? &gaA2BConfig_test[nIndex] : &gaA2BConfig[nIndex];
 			/*Operation code*/
 			switch (pOPUnit->eOpCode)
 			{
@@ -178,7 +165,7 @@ static void adi_a2b_NetworkSetup(struct device *dev)
 				case WRITE:
 					adi_a2b_Concat_Addr_Data(&aDataBuffer[0u], pOPUnit->nAddrWidth, pOPUnit->nAddr);
 					(void)memcpy(&aDataBuffer[pOPUnit->nAddrWidth], pOPUnit->paConfigData, pOPUnit->nDataCount);
-					printk("Operation number \n %d", nIndex);
+					//printk("Operation number \n %d", nIndex);
 					/* PAL Call, replace with custom implementation  */
 					adi_a2b_I2CWrite(dev, pOPUnit->nDeviceAddr, (pOPUnit->nAddrWidth + pOPUnit->nDataCount), &aDataBuffer[0u]);
 					break;
@@ -210,13 +197,9 @@ static void adi_a2b_NetworkSetup(struct device *dev)
 
 static int a2b24xx_hw_params(struct snd_pcm_substream *substream, struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
-	//struct snd_soc_component *codec = dai->component;
-	//struct a2b24xx *a2b24xx = snd_soc_component_get_drvdata(codec);
-	//unsigned int rate = params_rate(params);
 	int ret = 0;
-	// Add custom functionality 
-	//adi_a2b_NetworkSetup(codec->dev);
-	printk("alston %s %d \n\n" ,__func__ ,__LINE__);
+
+	
 	return ret;
 }
 
@@ -225,7 +208,6 @@ static int a2b24xx_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask, u
 {
 	// Add custom functionality
 
-	printk("alston %s %d \n\n" ,__func__ ,__LINE__);
 	return 0;
 }
 
@@ -235,7 +217,6 @@ static int a2b24xx_mute(struct snd_soc_dai *dai, int mute, int stream)
 	struct a2b24xx *a2b24xx = snd_soc_component_get_drvdata(codec);
 	//struct a2b24xx *a2b24xx = snd_soc_component_get_drvdata(dai->component);
 	adi_a2b_NetworkSetup(codec->dev);
-	printk("alston %s %d \n\n" ,__func__ ,__LINE__);
 	// Add custom functionality 
 
 	return 0;
@@ -246,7 +227,6 @@ static int a2b24xx_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	struct a2b24xx *a2b24xx = snd_soc_component_get_drvdata(dai->component);
 	int ret = 0;
 
-	printk("alston %s %d \n\n" ,__func__ ,__LINE__);
 	return ret;
 
 }
@@ -254,7 +234,6 @@ static int a2b24xx_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 static int a2b24xx_startup(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 {
 	struct a2b24xx *a2b24xx = snd_soc_component_get_drvdata(dai->component);
-	printk("alston %s %d \n\n" ,__func__ ,__LINE__);
 	// Add custom functionality 
 	return 0;
 }
@@ -387,7 +366,6 @@ int a2b24xx_probe(struct device *dev, struct regmap *regmap, enum a2b24xx_type t
 	a2b24xx->constraints.count = ARRAY_SIZE(a2b24xx_rates);
 
 	dev_set_drvdata(dev, a2b24xx);
-	printk("alston  %s %d\n\n" ,__func__ ,__LINE__);
 	custom_mode = 0;
 	//adi_a2b_NetworkSetup(a2b24xx->dev);
 	
@@ -419,7 +397,6 @@ static int a2b24xx_i2c_probe(struct i2c_client *client,
     config = a2b24xx_regmap_config;
     config.val_bits = 8;
     config.reg_bits = 8;
-    printk("alston %s %d" ,__func__ ,__LINE__);
 	device_create_file(&client->dev, &dev_attr_status);
     return a2b24xx_probe(&client->dev,
         devm_regmap_init_i2c(client, &config),

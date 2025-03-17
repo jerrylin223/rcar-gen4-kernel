@@ -1125,8 +1125,8 @@ U106: a2b2428@0x6c {
 	#clock-cells = <0>;
 //	clock-frequency = <11289600>; /* 44.1kHz groups */
 	clock-frequency = <12288000>; /* 48  kHz groups */
-	ignore-pmdown-time;
-	keep-clock-always-on;
+//	ignore-pmdown-time;
+//	keep-clock-always-on;
 
 	ports {
 #ifdef SUPPORT_DA7212

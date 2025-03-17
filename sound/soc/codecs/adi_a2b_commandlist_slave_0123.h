@@ -3058,124 +3058,124 @@ ADI_A2B_DISCOVERY_CONFIG gaA2BConfig[CONFIG_LEN] =
 	{0x39u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004036u,	0x01u,	0x0001u,	&gaConfig_ADAU1761_DejitterRegister_Data39[0],	I2C},	/* Dejitter Register Control */
 
 	/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
-	{0x68u,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000002u,	0x01u,	0x0003u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data0[0],	I2C},	/* REG_A2B0_VENDOR        */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000012u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data1[0],	I2C},	/* REG_A2B0_CONTROL       */
-	{0x00u,	DELAY,	0x00u,	0x00000000u,	0x00u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_A2BDelay_Data2[0],	I2C},	/* A2B_Delay */
-	{0x68u,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000017u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data3[0],	I2C},	/* REG_A2B0_INTTYPE       */
-	{0x68u,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000002u,	0x01u,	0x0003u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data4[0],	I2C},	/* REG_A2B0_VENDOR        */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Bu,	0x01u,	0x0003u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data5[0],	I2C},	/* REG_A2B0_INTMSK0       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Eu,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data6[0],	I2C},	/* REG_A2B0_BECCTL        */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Au,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data7[0],	I2C},	/* REG_A2B0_INTPND2       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Fu,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data8[0],	I2C},	/* REG_A2B0_RESPCYCS      */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000012u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data9[0],	I2C},	/* REG_A2B0_CONTROL       */
-	{0x00u,	DELAY,	0x00u,	0x00000000u,	0x00u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_A2BDelay_Data10[0],	I2C},	/* A2B_Delay */
-	{0x68u,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000017u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data11[0],	I2C},	/* REG_A2B0_INTTYPE       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000041u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data12[0],	I2C},	/* REG_A2B0_I2SGCFG       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000009u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data13[0],	I2C},	/* REG_A2B0_SWCTL         */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000013u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data14[0],	I2C},	/* REG_A2B0_DISCVRY       */
-	{0x00u,	DELAY,	0x00u,	0x00000000u,	0x00u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_A2BDelay_Data15[0],	I2C},	/* A2B_Delay */
-	{0x68u,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000017u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data16[0],	I2C},	/* REG_A2B0_INTTYPE       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000009u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data17[0],	I2C},	/* REG_A2B0_SWCTL         */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data18[0],	I2C},	/* REG_A2B0_NODEADR       */
+{0x6Cu,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000002u,	0x01u,	0x0003u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data0[0],	I2C},	/* REG_A2B0_VENDOR        */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000012u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data1[0],	I2C},	/* REG_A2B0_CONTROL       */
+{0x00u,	DELAY,	0x00u,	0x00000000u,	0x00u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_A2BDelay_Data2[0],	I2C},	/* A2B_Delay */
+{0x6Cu,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000017u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data3[0],	I2C},	/* REG_A2B0_INTTYPE       */
+{0x6Cu,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000002u,	0x01u,	0x0003u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data4[0],	I2C},	/* REG_A2B0_VENDOR        */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Bu,	0x01u,	0x0003u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data5[0],	I2C},	/* REG_A2B0_INTMSK0       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Eu,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data6[0],	I2C},	/* REG_A2B0_BECCTL        */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Au,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data7[0],	I2C},	/* REG_A2B0_INTPND2       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Fu,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data8[0],	I2C},	/* REG_A2B0_RESPCYCS      */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000012u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data9[0],	I2C},	/* REG_A2B0_CONTROL       */
+{0x00u,	DELAY,	0x00u,	0x00000000u,	0x00u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_A2BDelay_Data10[0],	I2C},	/* A2B_Delay */
+{0x6Cu,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000017u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data11[0],	I2C},	/* REG_A2B0_INTTYPE       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000041u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data12[0],	I2C},	/* REG_A2B0_I2SGCFG       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000009u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data13[0],	I2C},	/* REG_A2B0_SWCTL         */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000013u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data14[0],	I2C},	/* REG_A2B0_DISCVRY       */
+{0x00u,	DELAY,	0x00u,	0x00000000u,	0x00u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_A2BDelay_Data15[0],	I2C},	/* A2B_Delay */
+{0x6Cu,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000017u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data16[0],	I2C},	/* REG_A2B0_INTTYPE       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000009u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data17[0],	I2C},	/* REG_A2B0_SWCTL         */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data18[0],	I2C},	/* REG_A2B0_NODEADR       */
 
-	/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
-	{0x69u,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000002u,	0x01u,	0x0004u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data0[0],	I2C},	/* REG_A2B0_VENDOR        */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Bu,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data1[0],	I2C},	/* REG_A2B0_LDNSLOTS      */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Cu,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data2[0],	I2C},	/* REG_A2B0_LUPSLOTS      */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000003Fu,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data3[0],	I2C},	/* REG_A2B0_I2CCFG        */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000041u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data4[0],	I2C},	/* REG_A2B0_I2SGCFG       */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000042u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data5[0],	I2C},	/* REG_A2B0_I2SCFG        */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000047u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data6[0],	I2C},	/* REG_A2B0_PDMCTL        */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000004Au,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data7[0],	I2C},	/* REG_A2B0_GPIODAT       */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000004Du,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data8[0],	I2C},	/* REG_A2B0_GPIOOEN       */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000052u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data9[0],	I2C},	/* REG_A2B0_PINCFG        */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000005Au,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGAD242X0_Data10[0],	I2C},	/* REG_AD242X0_CLK2CFG    */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000065u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGAD242X0_Data11[0],	I2C},	/* REG_AD242X0_DNMASK0    */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000096u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGAD242X0_Data12[0],	I2C},	/* REG_AD242X0_MBOX1CTL   */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Bu,	0x01u,	0x0002u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data13[0],	I2C},	/* REG_A2B0_INTMSK0       */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Eu,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data14[0],	I2C},	/* REG_A2B0_BECCTL        */
+/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
+{0x6Du,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000002u,	0x01u,	0x0004u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data0[0],	I2C},	/* REG_A2B0_VENDOR        */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Bu,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data1[0],	I2C},	/* REG_A2B0_LDNSLOTS      */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Cu,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data2[0],	I2C},	/* REG_A2B0_LUPSLOTS      */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000003Fu,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data3[0],	I2C},	/* REG_A2B0_I2CCFG        */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000041u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data4[0],	I2C},	/* REG_A2B0_I2SGCFG       */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000042u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data5[0],	I2C},	/* REG_A2B0_I2SCFG        */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000047u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data6[0],	I2C},	/* REG_A2B0_PDMCTL        */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000004Au,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data7[0],	I2C},	/* REG_A2B0_GPIODAT       */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000004Du,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data8[0],	I2C},	/* REG_A2B0_GPIOOEN       */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000052u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data9[0],	I2C},	/* REG_A2B0_PINCFG        */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000005Au,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGAD242X0_Data10[0],	I2C},	/* REG_AD242X0_CLK2CFG    */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000065u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGAD242X0_Data11[0],	I2C},	/* REG_AD242X0_DNMASK0    */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000096u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGAD242X0_Data12[0],	I2C},	/* REG_AD242X0_MBOX1CTL   */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Bu,	0x01u,	0x0002u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data13[0],	I2C},	/* REG_A2B0_INTMSK0       */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Eu,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data14[0],	I2C},	/* REG_A2B0_BECCTL        */
 
-	/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
-//	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_NODEADRSet_Data19[0],	I2C},	/* NODEADR - Set the node address */
+/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
+//	{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_NODEADRSet_Data19[0],	I2C},	/* NODEADR - Set the node address */
 
-	/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_CHIPSet_Data15[0],	I2C},	/* CHIP - Set the chip address */
+/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_CHIPSet_Data15[0],	I2C},	/* CHIP - Set the chip address */
 
-	/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
-//	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_NODEADREnable_Data20[0],	I2C},	/* NODEADR - Enable PERI */
+/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
+//	{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_NODEADREnable_Data20[0],	I2C},	/* NODEADR - Enable PERI */
 
-	/*-- COMMANDS FOR DEVICE - Codec 0 :  ADAU1761 --*/
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_NonModRamAlloc_Data0[0],	I2C},	/* NonModRamAlloc */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SampleRate_Data1[0],	I2C},	/* Sample Rate Setting */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F6u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPRun_Data2[0],	I2C},	/* DSP Run Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004000u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_ClockControl_Data3[0],	I2C},	/* Clock Control Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004002u,	0x01u,	0x0006u,	&gaConfig_Codec0ADAU1761_PLLControl_Data4[0],	I2C},	/* PLL Control Register */
+/*-- COMMANDS FOR DEVICE - Codec 0 :  ADAU1761 --*/
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_NonModRamAlloc_Data0[0],	I2C},	/* NonModRamAlloc */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SampleRate_Data1[0],	I2C},	/* Sample Rate Setting */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F6u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPRun_Data2[0],	I2C},	/* DSP Run Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004000u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_ClockControl_Data3[0],	I2C},	/* Clock Control Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004002u,	0x01u,	0x0006u,	&gaConfig_Codec0ADAU1761_PLLControl_Data4[0],	I2C},	/* PLL Control Register */
 //	{0x00u,	DELAY,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_Delay_Data5[0],	I2C},	/* Delay */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004015u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_SerialPort_Data6[0],	I2C},	/* Serial Port Control Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004011u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_ALCControl_Data7[0],	I2C},	/* ALC Control Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004008u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_MicrophoneControl_Data8[0],	I2C},	/* Microphone Control Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004009u,	0x01u,	0x0008u,	&gaConfig_Codec0ADAU1761_RecordInput_Data9[0],	I2C},	/* Record Input Signal Path Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004019u,	0x01u,	0x0003u,	&gaConfig_Codec0ADAU1761_ADCControl_Data10[0],	I2C},	/* ADC Control Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000401Cu,	0x01u,	0x000Eu,	&gaConfig_Codec0ADAU1761_PlaybackOutput_Data11[0],	I2C},	/* Playback Output Signal Path Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004017u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_ConverterControl_Data12[0],	I2C},	/* Converter Control Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Au,	0x01u,	0x0003u,	&gaConfig_Codec0ADAU1761_DACControl_Data13[0],	I2C},	/* DAC Control Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Du,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialPort_Data14[0],	I2C},	/* Serial Port Pad Control Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Fu,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_CommunicationPort_Data15[0],	I2C},	/* Communication Port Pad Control Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004031u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_JackDetect_Data16[0],	I2C},	/* Jack Detect Pad Control Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000800u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data17[0],	I2C},	/* Program Clear Block 0 */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000008CCu,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data18[0],	I2C},	/* Program Clear Block 1 */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000998u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data19[0],	I2C},	/* Program Clear Block 2 */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000A64u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data20[0],	I2C},	/* Program Clear Block 3 */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000BFCu,	0x01u,	0x000Fu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data21[0],	I2C},	/* Program Clear Block 4 */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F5u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPON_Data22[0],	I2C},	/* DSP ON Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040C0u,	0x01u,	0x0005u,	&gaConfig_Codec0ADAU1761_CRCRegisters_Data23[0],	I2C},	/* CRC Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040C6u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_GPIORegisters_Data24[0],	I2C},	/* GPIO Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040E9u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_NonModulo_Data25[0],	I2C},	/* Non Modulo Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040D0u,	0x01u,	0x0005u,	&gaConfig_Codec0ADAU1761_WatchdogRegisters_Data26[0],	I2C},	/* Watchdog Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SamplingRate_Data27[0],	I2C},	/* Sampling Rate Setting Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F2u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_RoutingMatrix_Data28[0],	I2C},	/* Routing Matrix Inputs Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F3u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_RoutingMatrix_Data29[0],	I2C},	/* Routing Matrix Outputs Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F4u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialData_Data30[0],	I2C},	/* Serial Data Configuration Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F7u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPSlew_Data31[0],	I2C},	/* DSP Slew Mode Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F8u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialPort_Data32[0],	I2C},	/* Serial Port Sample Rate Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F9u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_ClockEnable_Data33[0],	I2C},	/* Clock Enable Registers */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000800u,	0x01u,	0x06C2u,	&gaConfig_Codec0ADAU1761_ProgramData_Data34[0],	I2C},	/* Program Data */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0060u,	&gaConfig_Codec0ADAU1761_Param_Data35[0],	I2C},	/* Param */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SampleRate_Data36[0],	I2C},	/* Sample Rate Setting */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F6u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPRun_Data37[0],	I2C},	/* DSP Run Register */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004036u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DejitterRegister_Data38[0],	I2C},	/* Dejitter Register Control */
-//	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004036u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DejitterRegister_Data39[0],	I2C},	/* Dejitter Register Control */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004015u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_SerialPort_Data6[0],	I2C},	/* Serial Port Control Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004011u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_ALCControl_Data7[0],	I2C},	/* ALC Control Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004008u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_MicrophoneControl_Data8[0],	I2C},	/* Microphone Control Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004009u,	0x01u,	0x0008u,	&gaConfig_Codec0ADAU1761_RecordInput_Data9[0],	I2C},	/* Record Input Signal Path Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004019u,	0x01u,	0x0003u,	&gaConfig_Codec0ADAU1761_ADCControl_Data10[0],	I2C},	/* ADC Control Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000401Cu,	0x01u,	0x000Eu,	&gaConfig_Codec0ADAU1761_PlaybackOutput_Data11[0],	I2C},	/* Playback Output Signal Path Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004017u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_ConverterControl_Data12[0],	I2C},	/* Converter Control Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Au,	0x01u,	0x0003u,	&gaConfig_Codec0ADAU1761_DACControl_Data13[0],	I2C},	/* DAC Control Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Du,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialPort_Data14[0],	I2C},	/* Serial Port Pad Control Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Fu,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_CommunicationPort_Data15[0],	I2C},	/* Communication Port Pad Control Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004031u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_JackDetect_Data16[0],	I2C},	/* Jack Detect Pad Control Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000800u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data17[0],	I2C},	/* Program Clear Block 0 */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000008CCu,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data18[0],	I2C},	/* Program Clear Block 1 */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000998u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data19[0],	I2C},	/* Program Clear Block 2 */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000A64u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data20[0],	I2C},	/* Program Clear Block 3 */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000BFCu,	0x01u,	0x000Fu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data21[0],	I2C},	/* Program Clear Block 4 */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F5u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPON_Data22[0],	I2C},	/* DSP ON Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040C0u,	0x01u,	0x0005u,	&gaConfig_Codec0ADAU1761_CRCRegisters_Data23[0],	I2C},	/* CRC Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040C6u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_GPIORegisters_Data24[0],	I2C},	/* GPIO Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040E9u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_NonModulo_Data25[0],	I2C},	/* Non Modulo Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040D0u,	0x01u,	0x0005u,	&gaConfig_Codec0ADAU1761_WatchdogRegisters_Data26[0],	I2C},	/* Watchdog Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SamplingRate_Data27[0],	I2C},	/* Sampling Rate Setting Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F2u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_RoutingMatrix_Data28[0],	I2C},	/* Routing Matrix Inputs Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F3u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_RoutingMatrix_Data29[0],	I2C},	/* Routing Matrix Outputs Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F4u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialData_Data30[0],	I2C},	/* Serial Data Configuration Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F7u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPSlew_Data31[0],	I2C},	/* DSP Slew Mode Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F8u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialPort_Data32[0],	I2C},	/* Serial Port Sample Rate Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F9u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_ClockEnable_Data33[0],	I2C},	/* Clock Enable Registers */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000800u,	0x01u,	0x06C2u,	&gaConfig_Codec0ADAU1761_ProgramData_Data34[0],	I2C},	/* Program Data */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0060u,	&gaConfig_Codec0ADAU1761_Param_Data35[0],	I2C},	/* Param */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SampleRate_Data36[0],	I2C},	/* Sample Rate Setting */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F6u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPRun_Data37[0],	I2C},	/* DSP Run Register */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004036u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DejitterRegister_Data38[0],	I2C},	/* Dejitter Register Control */
+//	{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004036u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DejitterRegister_Data39[0],	I2C},	/* Dejitter Register Control */
 
-	/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000009u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data21[0],	I2C},	/* REG_A2B0_SWCTL         */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Du,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data22[0],	I2C},	/* REG_A2B0_DNSLOTS       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Eu,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data23[0],	I2C},	/* REG_A2B0_UPSLOTS       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000041u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data24[0],	I2C},	/* REG_A2B0_I2SGCFG       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000042u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data25[0],	I2C},	/* REG_A2B0_I2SCFG        */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000052u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data26[0],	I2C},	/* REG_A2B0_PINCFG        */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Bu,	0x01u,	0x0003u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data27[0],	I2C},	/* REG_A2B0_INTMSK0       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Eu,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data28[0],	I2C},	/* REG_A2B0_BECCTL        */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data29[0],	I2C},	/* REG_A2B0_NODEADR       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data30[0],	I2C},	/* REG_A2B0_NODEADR       */
+/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000009u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data21[0],	I2C},	/* REG_A2B0_SWCTL         */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Du,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data22[0],	I2C},	/* REG_A2B0_DNSLOTS       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000000Eu,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data23[0],	I2C},	/* REG_A2B0_UPSLOTS       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000041u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data24[0],	I2C},	/* REG_A2B0_I2SGCFG       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000042u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data25[0],	I2C},	/* REG_A2B0_I2SCFG        */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000052u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data26[0],	I2C},	/* REG_A2B0_PINCFG        */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Bu,	0x01u,	0x0003u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data27[0],	I2C},	/* REG_A2B0_INTMSK0       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x0000001Eu,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data28[0],	I2C},	/* REG_A2B0_BECCTL        */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data29[0],	I2C},	/* REG_A2B0_NODEADR       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data30[0],	I2C},	/* REG_A2B0_NODEADR       */
 
-	/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000040u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data16[0],	I2C},	/* REG_A2B0_PLLCTL        */
+/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000040u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data16[0],	I2C},	/* REG_A2B0_PLLCTL        */
 
-	/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data31[0],	I2C},	/* REG_A2B0_NODEADR       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000010u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data32[0],	I2C},	/* REG_A2B0_SLOTFMT       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000011u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data33[0],	I2C},	/* REG_A2B0_DATCTL        */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000056u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGAD242X0_Data34[0],	I2C},	/* REG_AD242X0_I2SRRATE   */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000012u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data35[0],	I2C},	/* REG_A2B0_CONTROL       */
-	{0x00u,	DELAY,	0x00u,	0x00000000u,	0x00u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_A2BDelay_Data36[0],	I2C},	/* A2B_Delay */
-	{0x68u,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000017u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data37[0],	I2C},	/* REG_A2B0_INTTYPE       */
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data38[0],	I2C},	/* REG_A2B0_NODEADR       */
+/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data31[0],	I2C},	/* REG_A2B0_NODEADR       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000010u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data32[0],	I2C},	/* REG_A2B0_SLOTFMT       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000011u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data33[0],	I2C},	/* REG_A2B0_DATCTL        */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000056u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGAD242X0_Data34[0],	I2C},	/* REG_AD242X0_I2SRRATE   */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000012u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data35[0],	I2C},	/* REG_A2B0_CONTROL       */
+{0x00u,	DELAY,	0x00u,	0x00000000u,	0x00u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_A2BDelay_Data36[0],	I2C},	/* A2B_Delay */
+{0x6Cu,	READ,	0x00u,	0x00000000u,	0x01u,	0x00000017u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data37[0],	I2C},	/* REG_A2B0_INTTYPE       */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data38[0],	I2C},	/* REG_A2B0_NODEADR       */
 
-	/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000009u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data17[0],	I2C},	/* REG_A2B0_SWCTL         */
+/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000009u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_REGA2B0_Data17[0],	I2C},	/* REG_A2B0_SWCTL         */
 
-	/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000012u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data39[0],	I2C},	/* REG_A2B0_CONTROL       */
+/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000012u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_REGA2B0_Data39[0],	I2C},	/* REG_A2B0_CONTROL       */
 };
 
 
@@ -3187,55 +3187,55 @@ ADI_A2B_DISCOVERY_CONFIG gaA2BConfig_test[CONFIG_LEN_TEST] =
 {
 /*add test command*/
 /*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_NODEADRSet_Data19[0],	I2C},	/* NODEADR - Set the node address */
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_NODEADRSet_Data19[0],	I2C},	/* NODEADR - Set the node address */
 
-	/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_CHIPSet_Data15[0],	I2C},	/* CHIP - Set the chip address */
+/*-- COMMANDS FOR DEVICE - A2B Slave Node0 WD1BZ --*/
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000000u,	0x01u,	0x0001u,	&gaConfig_A2BSlaveNode0WD1BZ_CHIPSet_Data15[0],	I2C},	/* CHIP - Set the chip address */
 
-	/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
-	{0x68u,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_NODEADREnable_Data20[0],	I2C},	/* NODEADR - Enable PERI */
+/*-- COMMANDS FOR DEVICE - A2B Master Node WD1BZ --*/
+{0x6Cu,	WRITE,	0x00u,	0x00000000u,	0x01u,	0x00000001u,	0x01u,	0x0001u,	&gaConfig_A2BMasterNodeWD1BZ_NODEADREnable_Data20[0],	I2C},	/* NODEADR - Enable PERI */
 
-	/*-- COMMANDS FOR DEVICE - Codec 0 :  ADAU1761 --*/
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_NonModRamAlloc_Data0[0],	I2C},	/* NonModRamAlloc */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SampleRate_Data1[0],	I2C},	/* Sample Rate Setting */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F6u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPRun_Data2[0],	I2C},	/* DSP Run Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004000u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_ClockControl_Data3[0],	I2C},	/* Clock Control Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004002u,	0x01u,	0x0006u,	&gaConfig_Codec0ADAU1761_PLLControl_Data4[0],	I2C},	/* PLL Control Register */
-	{0x00u,	DELAY,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_Delay_Data5[0],	I2C},	/* Delay */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004015u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_SerialPort_Data6[0],	I2C},	/* Serial Port Control Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004011u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_ALCControl_Data7[0],	I2C},	/* ALC Control Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004008u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_MicrophoneControl_Data8[0],	I2C},	/* Microphone Control Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004009u,	0x01u,	0x0008u,	&gaConfig_Codec0ADAU1761_RecordInput_Data9[0],	I2C},	/* Record Input Signal Path Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004019u,	0x01u,	0x0003u,	&gaConfig_Codec0ADAU1761_ADCControl_Data10[0],	I2C},	/* ADC Control Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000401Cu,	0x01u,	0x000Eu,	&gaConfig_Codec0ADAU1761_PlaybackOutput_Data11[0],	I2C},	/* Playback Output Signal Path Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004017u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_ConverterControl_Data12[0],	I2C},	/* Converter Control Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Au,	0x01u,	0x0003u,	&gaConfig_Codec0ADAU1761_DACControl_Data13[0],	I2C},	/* DAC Control Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Du,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialPort_Data14[0],	I2C},	/* Serial Port Pad Control Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Fu,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_CommunicationPort_Data15[0],	I2C},	/* Communication Port Pad Control Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004031u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_JackDetect_Data16[0],	I2C},	/* Jack Detect Pad Control Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000800u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data17[0],	I2C},	/* Program Clear Block 0 */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000008CCu,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data18[0],	I2C},	/* Program Clear Block 1 */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000998u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data19[0],	I2C},	/* Program Clear Block 2 */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000A64u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data20[0],	I2C},	/* Program Clear Block 3 */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000BFCu,	0x01u,	0x000Fu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data21[0],	I2C},	/* Program Clear Block 4 */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F5u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPON_Data22[0],	I2C},	/* DSP ON Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040C0u,	0x01u,	0x0005u,	&gaConfig_Codec0ADAU1761_CRCRegisters_Data23[0],	I2C},	/* CRC Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040C6u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_GPIORegisters_Data24[0],	I2C},	/* GPIO Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040E9u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_NonModulo_Data25[0],	I2C},	/* Non Modulo Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040D0u,	0x01u,	0x0005u,	&gaConfig_Codec0ADAU1761_WatchdogRegisters_Data26[0],	I2C},	/* Watchdog Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SamplingRate_Data27[0],	I2C},	/* Sampling Rate Setting Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F2u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_RoutingMatrix_Data28[0],	I2C},	/* Routing Matrix Inputs Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F3u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_RoutingMatrix_Data29[0],	I2C},	/* Routing Matrix Outputs Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F4u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialData_Data30[0],	I2C},	/* Serial Data Configuration Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F7u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPSlew_Data31[0],	I2C},	/* DSP Slew Mode Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F8u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialPort_Data32[0],	I2C},	/* Serial Port Sample Rate Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F9u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_ClockEnable_Data33[0],	I2C},	/* Clock Enable Registers */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000800u,	0x01u,	0x06C2u,	&gaConfig_Codec0ADAU1761_ProgramData_Data34[0],	I2C},	/* Program Data */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0060u,	&gaConfig_Codec0ADAU1761_Param_Data35[0],	I2C},	/* Param */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SampleRate_Data36[0],	I2C},	/* Sample Rate Setting */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F6u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPRun_Data37[0],	I2C},	/* DSP Run Register */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004036u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DejitterRegister_Data38[0],	I2C},	/* Dejitter Register Control */
-	{0x69u,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004036u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DejitterRegister_Data39[0],	I2C},	/* Dejitter Register Control */
+/*-- COMMANDS FOR DEVICE - Codec 0 :  ADAU1761 --*/
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_NonModRamAlloc_Data0[0],	I2C},	/* NonModRamAlloc */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SampleRate_Data1[0],	I2C},	/* Sample Rate Setting */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F6u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPRun_Data2[0],	I2C},	/* DSP Run Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004000u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_ClockControl_Data3[0],	I2C},	/* Clock Control Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004002u,	0x01u,	0x0006u,	&gaConfig_Codec0ADAU1761_PLLControl_Data4[0],	I2C},	/* PLL Control Register */
+{0x00u,	DELAY,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_Delay_Data5[0],	I2C},	/* Delay */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004015u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_SerialPort_Data6[0],	I2C},	/* Serial Port Control Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004011u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_ALCControl_Data7[0],	I2C},	/* ALC Control Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004008u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_MicrophoneControl_Data8[0],	I2C},	/* Microphone Control Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004009u,	0x01u,	0x0008u,	&gaConfig_Codec0ADAU1761_RecordInput_Data9[0],	I2C},	/* Record Input Signal Path Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004019u,	0x01u,	0x0003u,	&gaConfig_Codec0ADAU1761_ADCControl_Data10[0],	I2C},	/* ADC Control Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000401Cu,	0x01u,	0x000Eu,	&gaConfig_Codec0ADAU1761_PlaybackOutput_Data11[0],	I2C},	/* Playback Output Signal Path Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004017u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_ConverterControl_Data12[0],	I2C},	/* Converter Control Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Au,	0x01u,	0x0003u,	&gaConfig_Codec0ADAU1761_DACControl_Data13[0],	I2C},	/* DAC Control Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Du,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialPort_Data14[0],	I2C},	/* Serial Port Pad Control Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x0000402Fu,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_CommunicationPort_Data15[0],	I2C},	/* Communication Port Pad Control Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004031u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_JackDetect_Data16[0],	I2C},	/* Jack Detect Pad Control Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000800u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data17[0],	I2C},	/* Program Clear Block 0 */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000008CCu,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data18[0],	I2C},	/* Program Clear Block 1 */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000998u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data19[0],	I2C},	/* Program Clear Block 2 */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000A64u,	0x01u,	0x03FCu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data20[0],	I2C},	/* Program Clear Block 3 */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000BFCu,	0x01u,	0x000Fu,	&gaConfig_Codec0ADAU1761_ProgramClear_Data21[0],	I2C},	/* Program Clear Block 4 */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F5u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPON_Data22[0],	I2C},	/* DSP ON Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040C0u,	0x01u,	0x0005u,	&gaConfig_Codec0ADAU1761_CRCRegisters_Data23[0],	I2C},	/* CRC Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040C6u,	0x01u,	0x0004u,	&gaConfig_Codec0ADAU1761_GPIORegisters_Data24[0],	I2C},	/* GPIO Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040E9u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_NonModulo_Data25[0],	I2C},	/* Non Modulo Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040D0u,	0x01u,	0x0005u,	&gaConfig_Codec0ADAU1761_WatchdogRegisters_Data26[0],	I2C},	/* Watchdog Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SamplingRate_Data27[0],	I2C},	/* Sampling Rate Setting Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F2u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_RoutingMatrix_Data28[0],	I2C},	/* Routing Matrix Inputs Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F3u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_RoutingMatrix_Data29[0],	I2C},	/* Routing Matrix Outputs Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F4u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialData_Data30[0],	I2C},	/* Serial Data Configuration Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F7u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPSlew_Data31[0],	I2C},	/* DSP Slew Mode Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F8u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SerialPort_Data32[0],	I2C},	/* Serial Port Sample Rate Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F9u,	0x01u,	0x0002u,	&gaConfig_Codec0ADAU1761_ClockEnable_Data33[0],	I2C},	/* Clock Enable Registers */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000800u,	0x01u,	0x06C2u,	&gaConfig_Codec0ADAU1761_ProgramData_Data34[0],	I2C},	/* Program Data */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00000000u,	0x01u,	0x0060u,	&gaConfig_Codec0ADAU1761_Param_Data35[0],	I2C},	/* Param */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040EBu,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_SampleRate_Data36[0],	I2C},	/* Sample Rate Setting */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x000040F6u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DSPRun_Data37[0],	I2C},	/* DSP Run Register */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004036u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DejitterRegister_Data38[0],	I2C},	/* Dejitter Register Control */
+{0x6Du,	WRITE,	0x00u,	0x00000000u,	0x02u,	0x00004036u,	0x01u,	0x0001u,	&gaConfig_Codec0ADAU1761_DejitterRegister_Data39[0],	I2C},	/* Dejitter Register Control */
 /*end test command*/
 };
 #endif /* _ADI_A2B_CMD_LIST_H_ */
