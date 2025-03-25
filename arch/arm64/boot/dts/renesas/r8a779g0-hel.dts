@@ -913,11 +913,11 @@ U106: a2b2428@0x6c {
 		gpio-line-names = "USB5V_EN_SOC ", "IO_PCIE_CWAKE", "IO_PCIE_BP   ", "CP30         ", "CP32         ", "CP33         ", "CP35         ", "CP37         ";
 
 
-		usb5.0v-en-soc {
-			gpio-hog;
-			gpios = <0 GPIO_ACTIVE_HIGH>;
-			output-high;
-		};
+//		usb5.0v-en-soc {
+//			gpio-hog;
+//			gpios = <0 GPIO_ACTIVE_HIGH>;
+//			output-high;
+//		};
 	};
 };
 
