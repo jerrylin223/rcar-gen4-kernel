@@ -866,14 +866,14 @@ static enum drm_mode_status lt9611_bridge_mode_valid(struct drm_bridge *bridge,
 	 * Since there might be some panels having the wired timing requirments,
 	 * dsi dual mode demand is added for hres > 2K in the original driver.
 	 *
-	 * Single dsi port in 4K res case passes in the following monitor:
+	 * Single dsi port in 2K res case passes in the following monitor:
 	 * - Acer XV280K
 	 *
-	 *if (mode->hdisplay > 2000 && !lt9611->dsi1_node)
-	 *	return MODE_PANEL;
-	 *else
-	 *	return MODE_OK;
 	 */
+	 if (mode->hdisplay > 2560 && !lt9611->dsi1_node)
+	 	return MODE_PANEL;
+	 else
+	 	return MODE_OK;
 
 	return MODE_OK;
 }
