@@ -793,8 +793,7 @@ static void max96712_reset_oneshot(struct max96712_priv *priv, int mask)
 static void max96712_disable(struct max96712_priv *priv)
 {
 	max96712_update_bits(priv, MAX_BACKTOP12(0), 0x02, 0);
-	max96712_update_bits(priv, MAX96712_VIDEO_PIPE_EN,
-			     priv->links_mask, 0);
+	max96712_update_bits(priv, MAX96712_VIDEO_PIPE_EN, priv->links_mask, 0);
 	max96712_power(priv, 0);
 }
 
@@ -1110,6 +1109,7 @@ static void max96712_setup(struct max96712_priv *priv)
 		max96712_gmsl2_fsync_setup(priv);
 		
 	/* Start all cameras. */
+	priv->links_mask = 0x00;
 	for_each_source(priv, source) {
 		max96712_gmsl2_link_pipe_setup(priv, link);
 		ret = max96712_gmsl2_reverse_channel_setup(priv, link);
@@ -1569,7 +1569,6 @@ static int max96712_probe(struct i2c_client *client)
 	priv->client = client;
 	priv->dt = MIPI_DT_RAW10;
 	priv->stream_count = 0;
-
 	of_property_read_u32_array(np, "reg", addrs, ARRAY_SIZE(addrs));
 
 	for (i = 0; i < MAX96712_NUM_GMSL; i++) {
