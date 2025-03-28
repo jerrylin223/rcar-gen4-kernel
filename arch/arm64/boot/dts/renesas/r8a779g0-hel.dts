@@ -90,7 +90,7 @@
 				<&vdsp2_region>, <&vdsp3_region>,
 				<&pap_region>, <&region_40bit>;
 	};
-	
+
 	sound_card: sound {
 		compatible = "audio-graph-card";
 
@@ -100,7 +100,7 @@
 #else
 		dais = <&rsnd_port0 &rsnd_port1>;	/* Audio Codec */
 #endif
-	};	
+	};
 };
 
 &ref_clk {
@@ -216,17 +216,17 @@
 		groups = "i2c0";
 		function = "i2c0";
 	};
-	
+
 	i2c1_pins: i2c1 {
 		groups = "i2c1";
 		function = "i2c1";
 	};
-	
+
 	i2c2_pins: i2c2 {
 		groups = "i2c2";
 		function = "i2c2";
 	};
-	
+
 	i2c3_pins: i2c3 {
 		groups = "i2c3";
 		function = "i2c3";
@@ -246,7 +246,7 @@
 		groups = "canfd1_data";
 		function = "canfd1";
 	};
-	
+
 	sound_pins: sound {
 		groups = "ssi_ctrl", "ssi_data";
 		function = "ssi";
@@ -406,7 +406,7 @@
 
 	status = "okay";
 	clock-frequency = <400000>;
-	
+
 	U21: lt9611@3b {
 		compatible = "lontium,lt9611";
 		reg = <0x3b>;
@@ -478,21 +478,21 @@
 			};
 		};
 	};
-U106: a2b2428@0x6c {
-         compatible = "adi,a2b24xx";
-         reg = <0x6c>;
-         //reset-gpios = <&lsio_gpio4 16 GPIO_ACTIVE_LOW>; // AD2435_Reset
-         //pinctrl-names = "default";
-         //pinctrl-0 = <&pinctrl_a2b2435>;
-         status = "okay";
-		 
+
+	U106: a2b2428@0x6c {
+		compatible = "adi,a2b24xx";
+		reg = <0x6c>;
+		//reset-gpios = <&lsio_gpio4 16 GPIO_ACTIVE_LOW>; // AD2435_Reset
+		//pinctrl-names = "default";
+		//pinctrl-0 = <&pinctrl_a2b2435>;
+		status = "okay";
+
 		port@0 {
 			ad2428_endpoint: endpoint {
 				remote-endpoint = <&rsnd_endpoint1>;
 			};
-		 };
+		};
 	};
-
 
 	U10: io_expander@70 {
 		compatible = "nxp,pca9538";
@@ -562,7 +562,7 @@ U106: a2b2428@0x6c {
 
 	status = "okay";
 	clock-frequency = <400000>;
-	
+
 	U6: gmsl-deserializer@4e {
 		gpio-controller;
 		#gpio-cells = <2>;
@@ -624,7 +624,7 @@ U106: a2b2428@0x6c {
 				#size-cells = <0>;
 				reg = <0>;
 				status = "okay";
-				
+
 				camera@51 {
 					compatible = FALCON_CAMERA;
 					reg = <0x51>;
@@ -642,7 +642,7 @@ U106: a2b2428@0x6c {
 				#size-cells = <0>;
 				reg = <1>;
 				status = "okay";
-				
+
 				camera@52 {
 					compatible = FALCON_CAMERA;
 					reg = <0x52>;
@@ -660,7 +660,7 @@ U106: a2b2428@0x6c {
 				#size-cells = <0>;
 				reg = <2>;
 				status = "okay";
-				
+
 				camera@53 {
 					compatible = FALCON_CAMERA;
 					reg = <0x53>;
@@ -678,7 +678,7 @@ U106: a2b2428@0x6c {
 				#size-cells = <0>;
 				reg = <3>;
 				status = "okay";
-				
+
 				camera@54 {
 					compatible = FALCON_CAMERA;
 					reg = <0x54>;
@@ -754,7 +754,7 @@ U106: a2b2428@0x6c {
 				#size-cells = <0>;
 				reg = <0>;
 				status = "okay";
-				
+
 				camera@51 {
 					compatible = FALCON_CAMERA;
 					reg = <0x51>;
@@ -772,7 +772,7 @@ U106: a2b2428@0x6c {
 				#size-cells = <0>;
 				reg = <1>;
 				status = "okay";
-				
+
 				camera@52 {
 					compatible = FALCON_CAMERA;
 					reg = <0x52>;
@@ -790,7 +790,7 @@ U106: a2b2428@0x6c {
 				#size-cells = <0>;
 				reg = <2>;
 				status = "okay";
-				
+
 				camera@53 {
 					compatible = FALCON_CAMERA;
 					reg = <0x53>;
@@ -808,7 +808,7 @@ U106: a2b2428@0x6c {
 				#size-cells = <0>;
 				reg = <3>;
 				status = "okay";
-				
+
 				camera@54 {
 					compatible = FALCON_CAMERA;
 					reg = <0x54>;
@@ -834,8 +834,8 @@ U106: a2b2428@0x6c {
 
 	status = "okay";
 	clock-frequency = <400000>;
-	
-	U179: i2c2-switch@74 {
+
+	U30: i2c2-switch@74 {
 		compatible = "nxp,pca9548";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -847,41 +847,47 @@ U106: a2b2428@0x6c {
 			#size-cells = <0>;
 			reg = <0>;
 		};
-		
+
 		i2c2_switch_ch1: i2c@1 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <1>;
 		};
-		
+
 		i2c2_switch_ch2: i2c@2 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <2>;
 		};
-		
+
 		i2c2_switch_ch3: i2c@3 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <3>;
 		};
-		
+
 		i2c2_switch_ch4: i2c@4 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <4>;
 		};
-		
+
 		i2c2_switch_ch5: i2c@5 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <5>;
 		};
-		
+
 		i2c2_switch_ch6: i2c@6 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <6>;
+		};
+
+		i2c2_switch_ch7: i2c@7 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <7>;
 		};
 	};
 };
@@ -1069,7 +1075,7 @@ U106: a2b2428@0x6c {
 };
 
 /*
- * Sound function : 
+ * Sound function :
  * define audio_clkin, rcar_sound and codec
  */
 &audio_clkin {
@@ -1112,26 +1118,27 @@ U106: a2b2428@0x6c {
 		};
 #else
 		rsnd_port0: port@0 {
-            rsnd_endpoint0: endpoint {
-                remote-endpoint = <&lt9611_audio_in>;
-                dai-format = "i2s";
-                bitclock-master = <&rsnd_endpoint0>;
-                frame-master = <&rsnd_endpoint0>;
-                /* Please use exclusively to the 'capture' */
-                playback = <&ssi0>;
-            };   
-        };
-		rsnd_port1: port@1 {
-           	rsnd_endpoint1: endpoint {
-                remote-endpoint = <&ad2428_endpoint>;
-                dai-format = "i2s";
-                //dai-format = "dsp_a";
-                //dai-tdm-slot-num = <6>;	
-                bitclock-master = <&rsnd_endpoint1>;
-                frame-master = <&rsnd_endpoint1>;
-                // Please use exclusively to the 'capture'
-                playback = <&ssi0>;
-            };
+			rsnd_endpoint0: endpoint {
+			remote-endpoint = <&lt9611_audio_in>;
+			dai-format = "i2s";
+			bitclock-master = <&rsnd_endpoint0>;
+			frame-master = <&rsnd_endpoint0>;
+			/* Please use exclusively to the 'capture' */
+			playback = <&ssi0>;
+		};
+
+		};
+			rsnd_port1: port@1 {
+			rsnd_endpoint1: endpoint {
+			remote-endpoint = <&ad2428_endpoint>;
+			dai-format = "i2s";
+			//dai-format = "dsp_a";
+			//dai-tdm-slot-num = <6>;
+			bitclock-master = <&rsnd_endpoint1>;
+			frame-master = <&rsnd_endpoint1>;
+			// Please use exclusively to the 'capture'
+			playback = <&ssi0>;
+		};
         };
 #endif
 	};
