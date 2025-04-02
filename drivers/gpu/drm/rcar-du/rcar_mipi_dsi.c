@@ -23,6 +23,7 @@
 #include <drm/drm_panel.h>
 #include <drm/drm_probe_helper.h>
 #include <drm/drm_mipi_dsi.h>
+#include <drm/drm_of.h>
 
 #include "rcar_mipi_dsi.h"
 #include "rcar_mipi_dsi_regs.h"
@@ -755,14 +756,29 @@ static int rcar_mipi_dsi_start_video(struct rcar_mipi_dsi *mipi_dsi)
  */
 static int rcar_mipi_dsi_attach(struct drm_bridge *bridge,
 				enum drm_bridge_attach_flags flags)
-{
+{	
 	struct rcar_mipi_dsi *mipi_dsi = bridge_to_rcar_mipi_dsi(bridge);
+	struct drm_bridge *panel_bridge;
+	struct drm_panel *panel;
+	int ret;
 
-	if (mipi_dsi->next_bridge)
-		return drm_bridge_attach(bridge->encoder, mipi_dsi->next_bridge,
-					bridge, flags);
-	else
-		return -ENODEV;
+	ret = drm_of_find_panel_or_bridge(mipi_dsi->dev->of_node, 1, 0, &panel,
+					  &panel_bridge);
+	if (ret)
+		return ret;
+
+	if (panel) {
+		panel_bridge = drm_panel_bridge_add(panel);
+		if (IS_ERR(panel_bridge))
+			return PTR_ERR(panel_bridge);
+	}
+	mipi_dsi->next_bridge = panel_bridge;
+
+	if (!mipi_dsi->next_bridge)
+		return -EPROBE_DEFER;
+
+	return drm_bridge_attach(bridge->encoder, mipi_dsi->next_bridge, bridge,
+				 flags);
 }
 
 static void rcar_mipi_dsi_mode_set(struct drm_bridge *bridge,
@@ -874,9 +890,16 @@ static int rcar_mipi_dsi_host_detach(struct mipi_dsi_host *host,
 	return 0;
 }
 
+static ssize_t rcar_mipi_host_transfer(struct mipi_dsi_host *dsi_host,
+				     const struct mipi_dsi_msg *msg)
+{
+	return 0;
+}
+
 static const struct mipi_dsi_host_ops rcar_mipi_dsi_host_ops = {
 	.attach = rcar_mipi_dsi_host_attach,
 	.detach = rcar_mipi_dsi_host_detach,
+	.transfer = rcar_mipi_host_transfer
 };
 
 /* -----------------------------------------------------------------------------
@@ -886,7 +909,6 @@ static const struct mipi_dsi_host_ops rcar_mipi_dsi_host_ops = {
 static int rcar_mipi_dsi_parse_dt(struct rcar_mipi_dsi *mipi_dsi)
 {
 	struct device_node *local_output = NULL;
-	struct device_node *remote_input = NULL;
 	struct device_node *remote = NULL;
 	struct device_node *node;
 	struct property *prop;
@@ -927,30 +949,6 @@ static int rcar_mipi_dsi_parse_dt(struct rcar_mipi_dsi *mipi_dsi)
 		goto done;
 	}
 
-	remote_input = of_graph_get_remote_endpoint(local_output);
-
-	for_each_endpoint_of_node(remote, node) {
-		if (node != remote_input) {
-			/*
-			 * The endpoint which is not input node must be bridge
-			 */
-			is_bridge = true;
-			of_node_put(node);
-			break;
-		}
-	}
-
-	if (is_bridge) {
-		mipi_dsi->next_bridge = of_drm_find_bridge(remote);
-		if (!mipi_dsi->next_bridge) {
-			ret = -EPROBE_DEFER;
-			goto done;
-		}
-	} else {
-		ret = -ENODEV;
-		goto done;
-	}
-
 	/* Get lanes information */
 	prop = of_find_property(local_output, "data-lanes", &len);
 	if (!prop) {
@@ -970,7 +968,6 @@ static int rcar_mipi_dsi_parse_dt(struct rcar_mipi_dsi *mipi_dsi)
 	mipi_dsi->num_data_lanes = num_lanes;
 done:
 	of_node_put(local_output);
-	of_node_put(remote_input);
 	of_node_put(remote);
 
 	return ret;
@@ -1029,6 +1026,13 @@ static int rcar_mipi_dsi_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
+	/* Init host device */
+	mipi_dsi->host.dev = dev;
+	mipi_dsi->host.ops = &rcar_mipi_dsi_host_ops;
+	ret = mipi_dsi_host_register(&mipi_dsi->host);
+	if (ret < 0)
+		return ret;
+
 	/* Init bridge */
 	mipi_dsi->bridge.driver_private = mipi_dsi;
 	mipi_dsi->bridge.funcs = &rcar_mipi_dsi_bridge_ops;
@@ -1048,13 +1052,6 @@ static int rcar_mipi_dsi_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to get cpg reset\n");
 		return PTR_ERR(mipi_dsi->rstc);
 	}
-
-	/* Init host device */
-	mipi_dsi->host.dev = dev;
-	mipi_dsi->host.ops = &rcar_mipi_dsi_host_ops;
-	ret = mipi_dsi_host_register(&mipi_dsi->host);
-	if (ret < 0)
-		return ret;
 
 	drm_bridge_add(&mipi_dsi->bridge);
 

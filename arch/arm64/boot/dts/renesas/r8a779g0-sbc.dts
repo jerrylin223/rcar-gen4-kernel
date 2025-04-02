@@ -154,12 +154,6 @@
 			regulator-boot-on;
 			regulator-always-on;
 	};
-	
-	backlight: panel-backlight {
-		compatible = "gpio-backlight";
-		gpios = <&gpio1 26 GPIO_ACTIVE_HIGH>;
-		default-on;
-    };
 };
 
 &pfc {
@@ -426,28 +420,7 @@
 };
 
 &i2c0_switch_ch3 {
-	J4: dsi_panel@0 {
-		reg = <0>;
-		compatible = "raspberrypi,dsi-7inch";
-		reset-gpio = <&gpio0 18 GPIO_ACTIVE_LOW>;
-//		backlight = <&backlight>;
-
-		port {
-			panel_in: endpoint {
-				remote-endpoint = <&dsi_out>;
-			};
-		};
-	};
 	
-	gt911: gt911@5d {
-		compatible = "goodix,gt911";
-		reg = <0x5d>;
-//		AVDD28-supply = <&touch_reg>;
-		touchscreen-size-x = <720>;
-		touchscreen-size-y = <1280>;
-		touchscreen-x-mm = <90>;
-		touchscreen-y-mm = <151>;
-	};
 };
 
 /*
@@ -581,21 +554,6 @@
 
 &du {
 	status = "okay";
-};
-
-&dsi0 {
-	status = "disabled";//"okay";
-
-	use-extal-clk;
-
-	ports {
-		port@1 {
-			dsi_out: endpoint {
-				remote-endpoint = <&panel_in>;
-				data-lanes = <1 2>;
-			};
-		};
-	};
 };
 
 &dsc {
