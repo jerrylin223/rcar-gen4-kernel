@@ -187,12 +187,43 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			boot@0 {
-				reg = <0x0 0x1200000>;
+			bootparam@0 {
+				reg = <0x00000000 0x040000>;
 				read-only;
 			};
-			user@1200000 {
-				reg = <0x1200000 0x2e00000>;
+			icumx_loader@00040000 {
+				reg = <0x00040000 0x200000>;
+				read-only;
+			};
+			cert_header@00240000 {
+				reg = <0x00240000 0x040000>;
+				read-only;
+			};
+			dummy_fw@00280000 {
+				reg = <0x00280000 0x200000>;
+				read-only;
+			};
+			cr52_loader@00480000 {
+				reg = <0x00480000 0x080000>;
+				read-only;
+			};
+			bl31@00500000 {
+				reg = <0x00500000 0x040000>;
+				read-only;
+			};
+			uboot@00540000 {
+				reg = <0x00540000 0x200000>;
+				read-only;
+			};
+			uboot-env@00740000 {
+				reg = <0x00740000 0x040000>;
+//				read-only;
+			};
+			dummy_rtos@00780000 {
+				reg = <0x00780000 0x1000000>;
+			};
+			user@01780000 {
+				reg = <0x01780000 0x2440000>;
 			};
 		};
 	};
