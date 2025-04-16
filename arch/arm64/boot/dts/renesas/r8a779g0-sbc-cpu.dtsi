@@ -12,7 +12,7 @@
 
 / {
 	model = "Renesas Raptor CPU board";
-	compatible = "renesas,raptor-cpu", "renesas,r8a779g0";
+	compatible = "renesas,sbc-cpu", "renesas,r8a779g0";
 
 	aliases {
 		serial0 = &hscif0;

@@ -9,7 +9,7 @@
 /plugin/;
 #include <dt-bindings/gpio/gpio.h>
 
-/ {
+&{/} {
 	touch_reg: touch_reg@1 {
 		reg = <1>;
 		compatible = "regulator-fixed";
@@ -59,6 +59,7 @@
 		compatible = "raspberrypi,dsi-7inch";
 		reset-gpio = <&display_mcu 0 GPIO_ACTIVE_LOW>;
 		backlight = <&display_mcu>;
+//		power-supply = <&display_mcu>;
 
 		port {
 			panel_in: endpoint {

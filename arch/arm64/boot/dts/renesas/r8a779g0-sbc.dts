@@ -11,7 +11,7 @@
 
 / {
 	model = "Renesas Raptor board based on r8a779g0";
-	compatible = "renesas,raptor-cpu", "renesas,r8a779g0";
+	compatible = "renesas,sbc-cpu", "renesas,r8a779g0";
 
 	aliases {
 		ethernet0 = &avb0;
