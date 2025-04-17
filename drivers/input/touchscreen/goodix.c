@@ -1034,7 +1034,7 @@ static int goodix_i2c_test(struct i2c_client *client)
 	int error;
 	u8 test;
 
-	while (retry++ < 2) {
+	while (retry++ < 50) {
 		error = goodix_i2c_read(client, GOODIX_REG_ID,
 					&test, 1);
 		if (!error)
