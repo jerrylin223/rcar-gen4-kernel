@@ -31,7 +31,9 @@
 
 #ifdef A2B_SETUP_ALSA
 //#include "adi_a2b_commandlist.h"
-#include "adi_a2b_commandlist_slave_0123.h"
+//#include "adi_a2b_commandlist_slave_0123.h"
+//#include "adi_a2b_commandlist_0522_bus_power.h"
+#include "adi_a2b_commandlist_local_local_bus_0526.h"
 
 #endif
 #include "a2b24xx.h"
@@ -151,13 +153,14 @@ static void adi_a2b_NetworkSetup(struct device *dev)
 	static unsigned char aDataBuffer[6000];
 	static unsigned char aDataWriteReadBuf[4u];
 	unsigned int nDelayVal ,config_line;
-	config_line = (custom_mode == 1) ? CONFIG_LEN_TEST : CONFIG_LEN;
+	config_line = CONFIG_LEN;
 	/* Loop over all the configuration */
 	if(enble <2)
 	{
 		for (nIndex = 0; nIndex < config_line; nIndex++)
 		{
-			pOPUnit = (custom_mode == 1) ? &gaA2BConfig_test[nIndex] : &gaA2BConfig[nIndex];
+			//pOPUnit = (custom_mode == 1) ? &gaA2BConfig_test[nIndex] : &gaA2BConfig[nIndex];
+			pOPUnit = &gaA2BConfig[nIndex];
 			/*Operation code*/
 			switch (pOPUnit->eOpCode)
 			{
@@ -165,7 +168,7 @@ static void adi_a2b_NetworkSetup(struct device *dev)
 				case WRITE:
 					adi_a2b_Concat_Addr_Data(&aDataBuffer[0u], pOPUnit->nAddrWidth, pOPUnit->nAddr);
 					(void)memcpy(&aDataBuffer[pOPUnit->nAddrWidth], pOPUnit->paConfigData, pOPUnit->nDataCount);
-					//printk("Operation number \n %d", nIndex);
+					//printk("local local bus Operation number \n %d", nIndex);
 					/* PAL Call, replace with custom implementation  */
 					adi_a2b_I2CWrite(dev, pOPUnit->nDeviceAddr, (pOPUnit->nAddrWidth + pOPUnit->nDataCount), &aDataBuffer[0u]);
 					break;
@@ -183,6 +186,7 @@ static void adi_a2b_NetworkSetup(struct device *dev)
 					{
 						nDelayVal = pOPUnit->paConfigData[nIndex1] | nDelayVal << 8u;
 					}
+					printk("local local bus \n %d", nIndex);
 					mdelay(nDelayVal);
 					break;
 				default:
@@ -326,9 +330,8 @@ static ssize_t status_store(struct device *dev, struct device_attribute *attr, c
 	switch (buf[0]) {
         case '1':
 			custom_mode = 1;
-            device_status = 1;
+			device_status = 1;
 			enble = 0;
-            adi_a2b_NetworkSetup(dev);
             break;
         case '0':
             device_status = 0;
