@@ -596,7 +596,10 @@ static int rcar_mipi_dsi_startup(struct rcar_mipi_dsi *mipi_dsi)
 	udelay(10);
 	rcar_mipi_dsi_clr(mipi_dsi, CLOCKSET1, CLOCKSET1_UPDATEPLL);
 
-	ppisetr = PPISETR_DLEN_3 | PPISETR_CLEN;
+	rcar_mipi_dsi_clr(mipi_dsi, TXSETR, TXSETR_LANECNT_MASK);
+	rcar_mipi_dsi_set(mipi_dsi, TXSETR, mipi_dsi->lanes - 1);
+
+	ppisetr = ((BIT(mipi_dsi->lanes) - 1) & PPISETR_DLEN_MASK) | PPISETR_CLEN;
 	rcar_mipi_dsi_write(mipi_dsi, PPISETR, ppisetr);
 
 	rcar_mipi_dsi_set(mipi_dsi, PHYSETUP, PHYSETUP_SHUTDOWNZ);
@@ -887,13 +890,96 @@ static int rcar_mipi_dsi_host_attach(struct mipi_dsi_host *host,
 static int rcar_mipi_dsi_host_detach(struct mipi_dsi_host *host,
 					struct mipi_dsi_device *device)
 {
+	struct rcar_mipi_dsi *dsi = host_to_rcar_mipi_dsi(host);
+
+	drm_bridge_remove(&dsi->bridge);
+
 	return 0;
 }
 
-static ssize_t rcar_mipi_host_transfer(struct mipi_dsi_host *dsi_host,
+static ssize_t rcar_mipi_host_transfer(struct mipi_dsi_host *host,
 				     const struct mipi_dsi_msg *msg)
 {
-	return 0;
+	struct rcar_mipi_dsi *dsi = host_to_rcar_mipi_dsi(host);
+	struct mipi_dsi_packet packet;
+	u8 payload[16] = { 0 };
+	u32 status;
+	int ret;
+
+	ret = mipi_dsi_create_packet(&packet, msg);
+	if (ret)
+		return ret;
+
+	if (msg->rx_len) {
+		/* ToDo: Implement DSI command RX with BTA */
+		dev_warn(dsi->dev, "DSI command RX is currently not implemented\n");
+		return -ENOTSUPP;
+	}
+
+	if (msg->tx_len > 16 || msg->rx_len > 16) {
+		/* ToDo: Implement Memory on AXI bus command mode */
+		dev_warn(dsi->dev,
+			 "Register-based command mode supports only up to 16 Bytes long payload\n");
+		return -ENOTSUPP;
+	}
+
+	/* Configure LP or HS command transfer */
+	rcar_mipi_dsi_write(dsi, TXCMSETR,
+			    (msg->flags & MIPI_DSI_MSG_USE_LPM) ? TXCMSETR_SPDTYP : 0);
+
+	/* Do not use IRQ, poll for completion, the completion is quick. */
+	rcar_mipi_dsi_write(dsi, TXCMIER, 0);
+
+	/*
+	 * Send the header
+	 * header[0] = Virtual Channel + Data Type
+	 * header[1] = Word Count LSB (LP) or first param (SP)
+	 * header[2] = Word Count MSB (LP) or second param (SP)
+	 */
+	rcar_mipi_dsi_write(dsi, TXCMPHDR,
+			    (mipi_dsi_packet_format_is_long(msg->type) ? TXCMPHDR_FMT : 0) |
+			    TXCMPHDR_VC(msg->channel) |
+			    TXCMPHDR_DT(msg->type) |
+			    TXCMPHDR_DATA1(packet.header[2]) |
+			    TXCMPHDR_DATA0(packet.header[1]));
+
+	if (mipi_dsi_packet_format_is_long(msg->type)) {
+		memcpy(payload, packet.payload,
+		       min(msg->tx_len, sizeof(payload)));
+
+		rcar_mipi_dsi_write(dsi, TXCMPPD0R,
+				    (payload[3] << 24) | (payload[2] << 16) |
+				    (payload[1] << 8) | payload[0]);
+		rcar_mipi_dsi_write(dsi, TXCMPPD1R,
+				    (payload[7] << 24) | (payload[6] << 16) |
+				    (payload[5] << 8) | payload[4]);
+		rcar_mipi_dsi_write(dsi, TXCMPPD2R,
+				    (payload[11] << 24) | (payload[10] << 16) |
+				    (payload[9] << 8) | payload[8]);
+		rcar_mipi_dsi_write(dsi, TXCMPPD3R,
+				    (payload[15] << 24) | (payload[14] << 16) |
+				    (payload[13] << 8) | payload[12]);
+	}
+
+	/* Start the transfer */
+	rcar_mipi_dsi_write(dsi, TXCMCR, TXCMCR_TXREQ);
+
+	ret = read_poll_timeout(rcar_mipi_dsi_read, status,
+				(status & TXCMSR_TXREQEND),
+				2000, 10000, false, dsi, TXCMSR);
+	if (ret < 0) {
+		dev_err(dsi->dev, "Command transfer timeout (0x%08x)\n",
+			status);
+		return ret;
+	}
+
+	/* Wait a bit between commands */
+	usleep_range(1000, 2000);
+
+	/* Clear the completion interrupt */
+	rcar_mipi_dsi_write(dsi, TXCMSR, TXCMSR_TXREQEND);
+
+	return packet.size;
 }
 
 static const struct mipi_dsi_host_ops rcar_mipi_dsi_host_ops = {
