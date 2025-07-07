@@ -10,6 +10,8 @@
 #include <dt-bindings/media/r8a779g0-csi2.h>
 #include <dt-bindings/media/video-interfaces.h>
 
+#define AVB0_1V8
+
 / {
 	model = "Renesas Raptor board based on r8a779g0";
 	compatible = "renesas,sbc-cpu", "renesas,r8a779g0";
@@ -167,7 +169,11 @@
 	vddq_eth_pins: vddq_eth {
 		pins_pwr {
 			pins = "GP_4_0", "GP_5_0", "GP_6_0","GP_7_0";
+#ifdef AVB0_1V8
+			power-source = <1800>;
+#else
 			power-source = <3300>;
+#endif
 		};
 	};
 

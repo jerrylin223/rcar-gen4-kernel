@@ -9,6 +9,8 @@
 #include <dt-bindings/input/input.h>
 
 #include "r8a779g0.dtsi"
+//#define PCBA_V1p0
+//#define DDR_16G
 
 / {
 	model = "Renesas Raptor CPU board";
@@ -38,7 +40,18 @@
 		device_type = "memory";
 		reg = <0x6 0x00000000 0x1 0x00000000>;
 	};
+#ifdef DDR_16G
+	memory@500000000 {
+		device_type = "memory";
+		reg = <0x5 0x00000000 0x1 0x00000000>;
+	};
 
+	memory@700000000 {
+		device_type = "memory";
+		reg = <0x7 0x00000000 0x1 0x00000000>;
+	};
+
+#endif
 	soc: soc {
 		du0 {
 			status = "disabled";
@@ -80,8 +93,13 @@
 		regulator-max-microvolt = <3300000>;
 
 		gpios = <&gpio8 13 GPIO_ACTIVE_HIGH>;
+#ifdef PCBA_V1p0
 		gpios-states = <1>;
 		states = <1800000 1>, <3300000 0>;
+#else
+		gpios-states = <0>;
+		states = <1800000 0>, <3300000 1>;
+#endif
 	};
 };
 
