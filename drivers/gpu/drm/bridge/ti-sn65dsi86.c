@@ -396,7 +396,7 @@ ti_sn_bridge_connector_detect(struct drm_connector *connector, bool force)
 	 */
 	if (pdata->hpd_poll) {
 		regmap_read(pdata->regmap, SN_HPD_DISABLE_REG, &val);
-		if (val)
+		if (val & 0x10)
 			status = connector_status_connected;
 		else
 			status =  connector_status_disconnected;
