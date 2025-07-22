@@ -186,7 +186,7 @@ static void adi_a2b_NetworkSetup(struct device *dev)
 					{
 						nDelayVal = pOPUnit->paConfigData[nIndex1] | nDelayVal << 8u;
 					}
-					printk("local local bus \n %d", nIndex);
+					//printk("local local bus \n %d", nIndex);
 					mdelay(nDelayVal);
 					break;
 				default:
