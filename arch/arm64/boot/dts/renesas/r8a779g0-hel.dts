@@ -407,49 +407,6 @@
 	status = "okay";
 	clock-frequency = <400000>;
 
-	U21: lt9611@3b {
-		compatible = "lontium,lt9611";
-		reg = <0x3b>;
-		interrupt-parent = <&gpio0>;
-		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-		reset-gpios = <&gpio6 11 GPIO_ACTIVE_HIGH>;
-
-		clocks = <&rcar_sound>;
-		clock-names = "mclk";
-
-		#sound-dai-cells = <0>;
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		status = "okay";
-
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
-				lt9611_video_in: endpoint {
-					remote-endpoint = <&dsi1_out>;
-				};
-			};
-
-			port@2 {
-				reg = <2>;
-				lt9611_audio_in: endpoint {
-					remote-endpoint = <&rsnd_endpoint0>;
-				};
-			};
-
-			port@3 {
-				reg = <3>;
-				lt9611_video_out: endpoint {
-					remote-endpoint = <&hdmi_con>;
-				};
-			};
-		};
-	};
-
 	U18: max96789@60 {
 		compatible = "maxim,max96789";
 		reg = <0x60>;
@@ -949,6 +906,48 @@
 
 	status = "okay";
 	clock-frequency = <400000>;
+	U21: lt9611@3b {
+		compatible = "lontium,lt9611";
+		reg = <0x3b>;
+		interrupt-parent = <&gpio0>;
+		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
+		reset-gpios = <&gpio6 11 GPIO_ACTIVE_HIGH>;
+
+		clocks = <&rcar_sound>;
+		clock-names = "mclk";
+
+		#sound-dai-cells = <0>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		status = "okay";
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				lt9611_video_in: endpoint {
+					remote-endpoint = <&dsi1_out>;
+				};
+			};
+
+			port@2 {
+				reg = <2>;
+				lt9611_audio_in: endpoint {
+					remote-endpoint = <&rsnd_endpoint0>;
+				};
+			};
+
+			port@3 {
+				reg = <3>;
+				lt9611_video_out: endpoint {
+					remote-endpoint = <&hdmi_con>;
+				};
+			};
+		};
+	};
 };
 
 /*
