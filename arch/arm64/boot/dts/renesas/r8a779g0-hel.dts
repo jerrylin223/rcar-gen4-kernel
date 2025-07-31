@@ -314,7 +314,7 @@
 	pinctrl-0 = <&avb1_pins>, <&vddq_eth_pins>;
 	pinctrl-names = "default";
 	phy-handle = <&phy1>;
-	rx-internal-delay-ps = <1800>;
+	phy-mode = "rgmii-rxid";
 	tx-internal-delay-ps = <2000>;
 	status = "okay";
 	phy-reset-gpios = <&gpio6 1 GPIO_ACTIVE_LOW>;
