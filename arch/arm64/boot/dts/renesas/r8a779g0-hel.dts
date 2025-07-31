@@ -74,6 +74,39 @@
 		};
 	};
 
+	panel_1080p {
+		compatible = "hannstar,hsd128juw1", "panel-lvds";
+
+		width-mm = <283>;
+		height-mm = <159>;
+
+		data-mapping = "vesa-24";
+
+		panel-timing {
+			clock-frequency = <133800000>;
+			hactive = <1920>;
+			vactive = <1080>;
+			hsync-len = <22>;
+			hfront-porch = <28>;
+			hback-porch = <30>;
+			vfront-porch = <8>;
+			vback-porch = <24>;
+			vsync-len = <3>;
+		};
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				panel_1080p_in0: endpoint {
+					remote-endpoint = <&max96752F_out>;
+				};
+			};
+		};
+	};
+
 	hdmi-out {
 		compatible = "hdmi-connector";
 		type = "a";
@@ -411,7 +444,11 @@
 		compatible = "maxim,max96789";
 		reg = <0x60>;
 		enable-gpios = <&U20 0 GPIO_ACTIVE_HIGH>;
-		status = "disabled";
+		status = "okay";
+
+		maxim,gmsl-link-type = <3 0> ;
+		maxim,gmsl-cable-sel = <0 0> ;
+		maxim,gmsl2-link-rate = <3> ;
 
 		ports {
 			#address-cells = <1>;
@@ -431,6 +468,35 @@
 			port@1 {
 				reg = <1>;
 				max96789_out: endpoint {
+					remote-endpoint = <&max96752F_in>;
+				};
+			};
+
+		};
+	};
+
+	max96752F_2@48 {
+		compatible = "maxim,max96752F";
+		reg = <0x48>;
+		status = "okay";
+
+		panel_switch;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				max96752F_in: endpoint {
+					remote-endpoint = <&max96789_out>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				max96752F_out: endpoint {
+					remote-endpoint = <&panel_1080p_in0>;
 				};
 			};
 		};
@@ -906,6 +972,7 @@
 
 	status = "okay";
 	clock-frequency = <400000>;
+
 	U21: lt9611@3b {
 		compatible = "lontium,lt9611";
 		reg = <0x3b>;
@@ -995,7 +1062,7 @@
 };
 
 &dsi0 {
-	status = "disabled";
+	status = "okay";
 
 	use-extal-clk;
 
@@ -1138,7 +1205,7 @@
 			// Please use exclusively to the 'capture'
 			playback = <&ssi0>;
 		};
-        };
+	};
 #endif
 	};
 };
