@@ -333,12 +333,15 @@
 	pinctrl-0 = <&avb2_pins>, <&vddq_eth_pins>;
 	pinctrl-names = "default";
 	phy-handle = <&phy2>;
-	status = "disabled";
-	phy-reset-gpios = <&gpio5 5 GPIO_ACTIVE_LOW>;
-
+	phy-mode = "rgmii-id";
+	rx-internal-delay-ps = <1800>; // For MAC
+	tx-internal-delay-ps = <2000>; // For MAC
+	status = "okay";
+	
 	phy2: ethernet-phy@2 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <0>;
+		compatible = "ethernet-phy-id001C.CB31",
+		             "ethernet-phy-ieee802.3-c22";
+		reg = <1>;
 		interrupt-parent = <&gpio5>;
 		interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
 		reset-gpios = <&gpio5 5 GPIO_ACTIVE_LOW>;
@@ -350,7 +353,7 @@
 	pinctrl-names = "default";
 	phy-handle = <&phy3>;
 	tx-internal-delay;
-	status = "disabled";
+	status = "okay";
 
 	phy3: ethernet-phy@3 {
 		compatible = "ethernet-phy-ieee802.3-c45";

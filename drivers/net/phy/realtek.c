@@ -11,19 +11,20 @@
 #include <linux/phy.h>
 #include <linux/module.h>
 #include <linux/delay.h>
+#include <linux/of.h>
 
 #define RTL821x_PHYSR				0x11
-#define RTL821x_PHYSR_DUPLEX			BIT(13)
+#define RTL821x_PHYSR_DUPLEX		BIT(13)
 #define RTL821x_PHYSR_SPEED			GENMASK(15, 14)
 
 #define RTL821x_INER				0x12
 #define RTL8211B_INER_INIT			0x6400
-#define RTL8211E_INER_LINK_STATUS		BIT(10)
-#define RTL8211F_INER_LINK_STATUS		BIT(4)
+#define RTL8211E_INER_LINK_STATUS	BIT(10)
+#define RTL8211F_INER_LINK_STATUS	BIT(4)
 
 #define RTL821x_INSR				0x13
 
-#define RTL821x_EXT_PAGE_SELECT			0x1e
+#define RTL821x_EXT_PAGE_SELECT		0x1e
 #define RTL821x_PAGE_SELECT			0x1f
 
 #define RTL8211F_PHYCR1				0x18
@@ -32,9 +33,9 @@
 #define RTL8211F_TX_DELAY			BIT(8)
 #define RTL8211F_RX_DELAY			BIT(3)
 
-#define RTL8211F_ALDPS_PLL_OFF			BIT(1)
-#define RTL8211F_ALDPS_ENABLE			BIT(2)
-#define RTL8211F_ALDPS_XTAL_OFF			BIT(12)
+#define RTL8211F_ALDPS_PLL_OFF		BIT(1)
+#define RTL8211F_ALDPS_ENABLE		BIT(2)
+#define RTL8211F_ALDPS_XTAL_OFF		BIT(12)
 
 #define RTL8211E_CTRL_DELAY			BIT(13)
 #define RTL8211E_TX_DELAY			BIT(12)
@@ -43,12 +44,12 @@
 #define RTL8201F_ISR				0x1e
 #define RTL8201F_IER				0x13
 
-#define RTL8366RB_POWER_SAVE			0x15
-#define RTL8366RB_POWER_SAVE_ON			BIT(12)
+#define RTL8366RB_POWER_SAVE		0x15
+#define RTL8366RB_POWER_SAVE_ON		BIT(12)
 
-#define RTL_SUPPORTS_5000FULL			BIT(14)
-#define RTL_SUPPORTS_2500FULL			BIT(13)
-#define RTL_SUPPORTS_10000FULL			BIT(0)
+#define RTL_SUPPORTS_5000FULL		BIT(14)
+#define RTL_SUPPORTS_2500FULL		BIT(13)
+#define RTL_SUPPORTS_10000FULL		BIT(0)
 #define RTL_ADV_2500FULL			BIT(7)
 #define RTL_LPADV_10000FULL			BIT(11)
 #define RTL_LPADV_5000FULL			BIT(6)
@@ -58,9 +59,27 @@
 
 #define RTL_GENERIC_PHYID			0x001cc800
 
-MODULE_DESCRIPTION("Realtek PHY driver");
-MODULE_AUTHOR("Johnson Leung");
-MODULE_LICENSE("GPL");
+#define RTL9000A_GINMR				0x14
+#define RTL9000A_GINMR_LINK_STATUS	BIT(4)
+
+/////////////////////////
+#define RTL9010Bx_PHYSRAD           0x1B
+#define RTL9010Bx_PHYSRD            0x1C
+#define RTL9010Bx_GINSR             0x1D
+#define RTL9010Bx_PAGSR             0x1F
+
+typedef enum {
+	E_NOERR	= 0x00,
+	E_INVALD	= 0xFC,	/* Invalid argument or value */
+	E_NOTRDY	= 0xFD,	/* Not Ready to Access */
+	E_TIMOUT	= 0xFE,	/* Time out */
+	E_FAILED	= 0xFF	/* Unexpected Result */
+} Error_Code;
+
+u16 param_check[21] = {0x0D13, 21, 0x0047, 0, 0x859C, 0x0609, 0, 0x85A2, 0x0300, 0, 0x85A4, 0x0D07, 
+                       0, 0xDC00, 0x1899, 0x0A4C, 20, 0x2A2E,  0x0A49, 20, 0xFB00};
+
+//////////////////////////
 
 static int rtl821x_read_page(struct phy_device *phydev)
 {
@@ -333,6 +352,336 @@ static int rtl8366rb_config_init(struct phy_device *phydev)
 	}
 
 	return ret;
+}
+
+
+static int rtl9010_get_features(struct phy_device *phydev)
+{
+
+	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT1_Full_BIT, phydev->supported);
+	linkmode_copy(phydev->advertising, phydev->supported);
+	return 0;
+}
+
+//////////////////////////////////////////////////////////////////
+static int rtl9010_Initial_Configuration_Check(struct phy_device *phydev)
+{
+	u16 mdio_data = 0;
+	u16 mdio_data_chk = 0;
+
+	u16 page;
+	u16 reg, i;
+	u32 timer = 2000; // set a 2ms timer
+
+	for (i = 0; i < 21 ; i = i + 3)
+	{
+		page = param_check[i];
+		mdio_data_chk = param_check[i + 2];
+		reg = param_check[i + 1];
+		if (page == 0)
+		{
+			phy_write(phydev, 27, reg);
+			mdio_data = phy_read(phydev, 28);
+		}
+		else
+		{
+			phy_write(phydev, 31, page);
+			mdio_data = phy_read(phydev, reg);
+		}
+
+		if (mdio_data_chk != mdio_data)
+		{
+			printk("%dth param error page=0x%04X reg=0x%04X data=0x%04X\r\n", i / 3, page, reg, mdio_data);
+			return E_FAILED;
+		}
+	}	
+		
+	return E_NOERR;
+}
+
+static int rtl9010_Initial_Configuration(struct phy_device *phydev)
+{
+	u32 mdio_data = 0;
+	u32 timer = 2000; // set a 2ms timer
+
+	//PHY parameter start//
+	phy_write(phydev, RTL9010Bx_PAGSR, 0x0D13);    
+	phy_write(phydev, 21, 0x0047); 	//added
+	phy_write(phydev, 27, 0x859C);
+	phy_write(phydev, 28, 0x0609);
+	phy_write(phydev, 27, 0x85A2);
+	phy_write(phydev, 28, 0x0300);
+	phy_write(phydev, 27, 0x85A4);
+	phy_write(phydev, 28, 0x0D07); 	//modified
+	phy_write(phydev, 27, 0xDC00);
+	phy_write(phydev, 28, 0x1899);
+	phy_write(phydev, 31, 0x0A4C);
+	phy_write(phydev, 20, 0x2A2E);
+	phy_write(phydev, 31, 0x0A49);
+	phy_write(phydev, 20, 0xFB00);
+	
+	phy_write(phydev, MII_BMCR, BMCR_RESET);	// PHY soft-reset
+
+	do
+	{	// Check soft-reset complete
+
+		mdio_data = phy_read(phydev, 0);
+		if (mdio_data == 0xFFFF)
+			return E_NOTRDY;
+
+		timer--;
+		if (timer == 0)
+		{
+			return E_TIMOUT;
+		}
+	} while(mdio_data != 0x0140);
+	return rtl9010_Initial_Configuration_Check(phydev);
+}
+
+//////////////////////////////////////////////////////////////////
+
+static int rtl9010_wait_reset(struct phy_device *phydev)
+{
+	int i, bmcr;
+
+	/* Poll BMCR.RESET cleared */
+	for (i = 0; i < 100; i++) {
+		bmcr = phy_read(phydev, MII_BMCR);
+		if (bmcr < 0)
+			return bmcr;
+		if (!(bmcr & BMCR_RESET))
+			return 0;
+		udelay(100);
+	}
+	return -ETIMEDOUT;
+}
+
+static int rtl9010_set_rgmii_delay_1000M(struct phy_device *phydev)
+{
+	switch (phydev->interface) {
+    case PHY_INTERFACE_MODE_RGMII_ID:   /* TXDLY + RXDLY */
+		phy_write(phydev, 27, 0xD04A);    // RX
+		phy_write(phydev, 28, 0x000F);
+		phy_write(phydev, 27, 0xD082);    // TX
+		phy_write(phydev, 28, 0x0003);
+		phy_write(phydev, 27, 0xD084);    // TX
+		phy_write(phydev, 28, 0x4007);
+		break;
+    case PHY_INTERFACE_MODE_RGMII_TXID: /* TXDLY only */
+		phy_write(phydev, 27, 0xD082);    // TX
+		phy_write(phydev, 28, 0x0003);
+		phy_write(phydev, 27, 0xD084);    // TX
+		phy_write(phydev, 28, 0x4007);
+        break;
+    case PHY_INTERFACE_MODE_RGMII_RXID: /* RXDLY only */
+		phy_write(phydev, 27, 0xD04A);    // RX
+		phy_write(phydev, 28, 0x000F);
+        break;
+    case PHY_INTERFACE_MODE_RGMII:
+        break;
+    default:
+        break;
+    }
+	return 0;
+}
+
+static int rtl9010_txrx_speed(struct phy_device *phydev)
+{
+	// Force Speed/Duplex
+	int ctl;
+
+	ctl = phy_read(phydev, MII_BMCR);
+	if (ctl < 0)
+        return ctl;
+
+	ctl &= ~(BMCR_ANENABLE | BMCR_SPEED1000 | BMCR_SPEED100 | BMCR_FULLDPLX);
+
+	switch (phydev->speed) {
+	case SPEED_1000:
+        ctl |= BMCR_SPEED1000;
+        break;
+	case SPEED_100:
+        ctl |= BMCR_SPEED100;
+        break;
+	case SPEED_10:
+        break;
+	}
+
+	if (phydev->duplex == DUPLEX_FULL)
+        ctl |= BMCR_FULLDPLX;
+
+	phy_write(phydev, MII_BMCR, ctl);
+
+	return 0;
+}
+
+static int rtl9010_config_init(struct phy_device *phydev)
+{
+	phydev_info(phydev, "[%s](%d): \n",__func__,__LINE__);
+	int ret;
+	
+	ret = phy_write(phydev, MII_BMCR, BMCR_RESET);
+	if (ret < 0)
+		return ret;
+		
+	ret = rtl9010_wait_reset(phydev);
+	if (ret)
+		return ret;	
+
+	phydev->speed = SPEED_1000;
+	phydev->duplex = DUPLEX_FULL;
+	phydev->link = 1;
+
+	if (rtl9010_Initial_Configuration(phydev) != 0)
+	{
+		printk("[ERROR] rtl9010_Initial_Configuration failed.\n");
+		return -1;
+	}
+	
+    if (rtl9010_txrx_speed(phydev) != 0)
+    {
+		printk("[ERROR] rtl9010_txrx_speed failed.\n");
+		return -1;
+	} 
+		
+	/* set RGMII TX/RX Delay（phy-mode）*/
+    //if (rtl9010_set_rgmii_delay_1000M(phydev) != 0)
+    //{
+		//printk("[ERROR] rtl9010_set_rgmii_delay_100M failed.\n");
+		//return -1;
+	//} 
+	
+	phy_write(phydev, MII_BMCR, 0x8000);
+	
+    /* default page 0x0A42 */
+    phy_write(phydev, RTL9010Bx_PAGSR, 0x0A42);
+
+    return 0;
+}
+
+static int rtl9010_config_aneg(struct phy_device *phydev)
+{
+    int ret;
+	u16 ctl = 0;
+	
+	phydev->autoneg = AUTONEG_DISABLE;
+	
+	/* 設定 Auto-Negotiation，直接用 kernel 提供的 */
+    if (phydev->autoneg == AUTONEG_ENABLE) {
+        return genphy_config_aneg(phydev);
+    }
+    
+	switch (phydev->master_slave_set) {
+	case MASTER_SLAVE_CFG_MASTER_FORCE:
+		ctl |= CTL1000_AS_MASTER;
+		break;
+	case MASTER_SLAVE_CFG_SLAVE_FORCE:
+		break;
+	case MASTER_SLAVE_CFG_UNKNOWN:
+	case MASTER_SLAVE_CFG_UNSUPPORTED:
+		return 0;
+	default:
+		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
+		return -EOPNOTSUPP;
+	}
+
+	ret = phy_modify_changed(phydev, MII_CTRL1000, CTL1000_AS_MASTER, ctl);
+	if (ret == 1)
+		ret = genphy_restart_aneg(phydev);
+
+	pr_info("RTL9010: Auto-negotiation configured\n");
+	return 0;
+}
+
+static int rtl9010_read_status(struct phy_device *phydev)
+{
+	int ret;
+
+	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
+	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
+
+	ret = genphy_update_link(phydev);
+	if (ret)
+		return ret;
+
+	ret = phy_read(phydev, MII_CTRL1000);
+	if (ret < 0)
+		return ret;
+	if (ret & CTL1000_AS_MASTER)
+		phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_FORCE;
+	else
+		phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_FORCE;
+
+	ret = phy_read(phydev, MII_STAT1000);
+	if (ret < 0)
+		return ret;
+	if (ret & LPA_1000MSRES)
+		phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
+	else
+		phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
+		
+	ret = genphy_read_status(phydev);
+	if (ret)
+		return ret;
+
+    //pr_info("RTL9010: Link %s, %d Mbps, %s-duplex\n",
+             //phydev->link ? "up" : "down",
+             //phydev->speed,
+             //phydev->duplex == DUPLEX_FULL ? "full" : "half");
+
+	return 0;
+}
+
+static int rtl9010_ack_interrupt(struct phy_device *phydev)
+{
+	int err;
+
+	err = phy_read(phydev, RTL8211F_INSR);
+
+	return (err < 0) ? err : 0;
+}
+
+static int rtl9010_config_intr(struct phy_device *phydev)
+{
+	u16 val;
+	int err;
+
+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+		err = rtl9010_ack_interrupt(phydev);
+		if (err)
+			return err;
+
+		val = (u16)~RTL9000A_GINMR_LINK_STATUS;
+		err = phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
+	} else {
+		val = ~0;
+		err = phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
+		if (err)
+			return err;
+
+		err = rtl9010_ack_interrupt(phydev);
+	}
+
+	return phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
+}
+
+
+static irqreturn_t rtl9010_handle_interrupt(struct phy_device *phydev)
+{
+	int irq_status;
+
+	irq_status = phy_read(phydev, RTL8211F_INSR);
+	if (irq_status < 0) {
+//		phy_error(phydev);
+		return IRQ_NONE;
+	}
+
+	if (!(irq_status & RTL8211F_INER_LINK_STATUS))
+		return IRQ_NONE;
+
+//	phy_trigger_machine(phydev);
+
+	return IRQ_HANDLED;
 }
 
 /* get actual speed to cover the downshift case */
@@ -687,14 +1036,33 @@ static struct phy_driver realtek_drvs[] = {
 		.config_intr	= genphy_no_config_intr,
 		.suspend	= genphy_suspend,
 		.resume		= genphy_resume,
+	}, {
+		PHY_ID_MATCH_EXACT(0x001ccb31),
+		.phy_id	        = 0x001ccb31,
+		.name		    = "RTL9031 Ethernet",
+		.phy_id_mask	= 0x001fffff,
+//		.get_features	= rtl9010_get_features,
+		.features       = PHY_GBIT_FEATURES,
+		.config_init	= rtl9010_config_init,
+		.config_aneg	= rtl9010_config_aneg,
+		.read_status	= rtl9010_read_status,
+		.config_intr	= rtl9010_config_intr,
+//		.handle_interrupt = rtl9010_handle_interrupt,
+//		.suspend	= genphy_suspend,
+//		.resume		= genphy_resume,
+		.read_page	= rtl821x_read_page,
+		.write_page	= rtl821x_write_page,
 	},
 };
 
 module_phy_driver(realtek_drvs);
 
 static const struct mdio_device_id __maybe_unused realtek_tbl[] = {
-	{ PHY_ID_MATCH_VENDOR(0x001cc800) },
+	{ PHY_ID_MATCH_VENDOR(0x001ccb31) },
 	{ }
 };
 
 MODULE_DEVICE_TABLE(mdio, realtek_tbl);
+MODULE_DESCRIPTION("Realtek PHY driver");
+MODULE_AUTHOR("Johnson Leung");
+MODULE_LICENSE("GPL");
