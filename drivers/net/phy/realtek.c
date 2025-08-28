@@ -62,7 +62,6 @@
 #define RTL9000A_GINMR				0x14
 #define RTL9000A_GINMR_LINK_STATUS	BIT(4)
 
-/////////////////////////
 #define RTL9010Bx_PHYSRAD           0x1B
 #define RTL9010Bx_PHYSRD            0x1C
 #define RTL9010Bx_GINSR             0x1D
@@ -78,8 +77,6 @@ typedef enum {
 
 u16 param_check[21] = {0x0D13, 21, 0x0047, 0, 0x859C, 0x0609, 0, 0x85A2, 0x0300, 0, 0x85A4, 0x0D07, 
                        0, 0xDC00, 0x1899, 0x0A4C, 20, 0x2A2E,  0x0A49, 20, 0xFB00};
-
-//////////////////////////
 
 static int rtl821x_read_page(struct phy_device *phydev)
 {
@@ -354,7 +351,6 @@ static int rtl8366rb_config_init(struct phy_device *phydev)
 	return ret;
 }
 
-
 static int rtl9010_get_features(struct phy_device *phydev)
 {
 
@@ -363,7 +359,6 @@ static int rtl9010_get_features(struct phy_device *phydev)
 	return 0;
 }
 
-//////////////////////////////////////////////////////////////////
 static int rtl9010_Initial_Configuration_Check(struct phy_device *phydev)
 {
 	u16 mdio_data = 0;
@@ -373,24 +368,19 @@ static int rtl9010_Initial_Configuration_Check(struct phy_device *phydev)
 	u16 reg, i;
 	u32 timer = 2000; // set a 2ms timer
 
-	for (i = 0; i < 21 ; i = i + 3)
-	{
+	for (i = 0; i < 21 ; i = i + 3) {
 		page = param_check[i];
 		mdio_data_chk = param_check[i + 2];
 		reg = param_check[i + 1];
-		if (page == 0)
-		{
+		if (page == 0) {
 			phy_write(phydev, 27, reg);
 			mdio_data = phy_read(phydev, 28);
-		}
-		else
-		{
+		} else {
 			phy_write(phydev, 31, page);
 			mdio_data = phy_read(phydev, reg);
 		}
 
-		if (mdio_data_chk != mdio_data)
-		{
+		if (mdio_data_chk != mdio_data) {
 			printk("%dth param error page=0x%04X reg=0x%04X data=0x%04X\r\n", i / 3, page, reg, mdio_data);
 			return E_FAILED;
 		}
@@ -422,30 +412,26 @@ static int rtl9010_Initial_Configuration(struct phy_device *phydev)
 	
 	phy_write(phydev, MII_BMCR, BMCR_RESET);	// PHY soft-reset
 
-	do
-	{	// Check soft-reset complete
+	do {	// Check soft-reset complete
 
 		mdio_data = phy_read(phydev, 0);
 		if (mdio_data == 0xFFFF)
 			return E_NOTRDY;
 
 		timer--;
-		if (timer == 0)
-		{
+		if (timer == 0) {
 			return E_TIMOUT;
 		}
 	} while(mdio_data != 0x0140);
 	return rtl9010_Initial_Configuration_Check(phydev);
 }
 
-//////////////////////////////////////////////////////////////////
-
 static int rtl9010_wait_reset(struct phy_device *phydev)
 {
 	int i, bmcr;
 
 	/* Poll BMCR.RESET cleared */
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < 10; i++) {
 		bmcr = phy_read(phydev, MII_BMCR);
 		if (bmcr < 0)
 			return bmcr;
@@ -517,39 +503,38 @@ static int rtl9010_txrx_speed(struct phy_device *phydev)
 
 static int rtl9010_config_init(struct phy_device *phydev)
 {
-	phydev_info(phydev, "[%s](%d): \n",__func__,__LINE__);
 	int ret;
+	u32 val;
+	struct device_node *np = phydev->mdio.dev.of_node;
+
+	if (phy_write(phydev, MII_BMCR, BMCR_RESET) != 0) {
+		printk("[ERROR] BMCR_RESET failed.\n");
+		return -1;
+	}
 	
-	ret = phy_write(phydev, MII_BMCR, BMCR_RESET);
-	if (ret < 0)
-		return ret;
-		
-	ret = rtl9010_wait_reset(phydev);
-	if (ret)
-		return ret;	
+	phydev->autoneg = AUTONEG_DISABLE;
+	phydev->speed   = SPEED_1000;
+	phydev->duplex  = DUPLEX_FULL;
+	phydev->link    = 1;
 
-	phydev->speed = SPEED_1000;
-	phydev->duplex = DUPLEX_FULL;
-	phydev->link = 1;
-
-	if (rtl9010_Initial_Configuration(phydev) != 0)
-	{
+	if (rtl9010_Initial_Configuration(phydev) != 0) {
 		printk("[ERROR] rtl9010_Initial_Configuration failed.\n");
 		return -1;
 	}
 	
-    if (rtl9010_txrx_speed(phydev) != 0)
-    {
+    if (rtl9010_txrx_speed(phydev) != 0) {
 		printk("[ERROR] rtl9010_txrx_speed failed.\n");
 		return -1;
 	} 
 		
 	/* set RGMII TX/RX Delay（phy-mode）*/
-    //if (rtl9010_set_rgmii_delay_1000M(phydev) != 0)
-    //{
-		//printk("[ERROR] rtl9010_set_rgmii_delay_100M failed.\n");
-		//return -1;
-	//} 
+    of_property_read_u32(np, "set-phy-delay", &val);
+    if (val == 1) {
+		printk("[%s] Set PHY RX/TX delay.\n", __FUNCTION__);
+		rtl9010_set_rgmii_delay_1000M(phydev);
+	} else {
+		printk("[%s] Set MAC RX/TX delay.\n", __FUNCTION__);
+	}
 	
 	phy_write(phydev, MII_BMCR, 0x8000);
 	
@@ -599,7 +584,10 @@ static int rtl9010_read_status(struct phy_device *phydev)
 
 	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
 	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
-
+	phydev->speed = SPEED_1000;
+	phydev->duplex = DUPLEX_FULL;
+	phydev->link = 1;
+	
 	ret = genphy_update_link(phydev);
 	if (ret)
 		return ret;
@@ -664,7 +652,6 @@ static int rtl9010_config_intr(struct phy_device *phydev)
 
 	return phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
 }
-
 
 static irqreturn_t rtl9010_handle_interrupt(struct phy_device *phydev)
 {

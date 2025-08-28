@@ -345,6 +345,7 @@
 		interrupt-parent = <&gpio5>;
 		interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
 		reset-gpios = <&gpio5 5 GPIO_ACTIVE_LOW>;
+		set-phy-delay = <0>;
 	};
 };
 
