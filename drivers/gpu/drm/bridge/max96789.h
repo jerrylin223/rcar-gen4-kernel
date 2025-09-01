@@ -13,6 +13,8 @@
 #define   TX_3GBPS				1
 #define   TX_6GBPS				2
 #define MAX96789_REG2				0x02
+#define   AUD_TX_EN_X				BIT(2)
+#define   AUD_TX_EN_Y				BIT(3)
 #define   VID_TX_EN_Y				BIT(5)
 #define   VID_TX_EN_X				BIT(4)
 #define MAX96789_REG3				0x03

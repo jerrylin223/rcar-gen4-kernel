@@ -484,7 +484,7 @@ static void max96789_dsi_cfg_for_split(struct max96789_priv *priv)
 	max96789_video_timing(priv);
 
 	/* 0x0002: REG2 */
-	mask = VID_TX_EN_X | VID_TX_EN_Y | 0x3;
+	mask = VID_TX_EN_X | VID_TX_EN_Y | AUD_TX_EN_X | 0x3;
 	regmap_update_bits(priv->regmap, MAX96789_REG2, mask, mask);
 
 }
@@ -651,7 +651,7 @@ static void max96789_atomic_bridge_enable(struct drm_bridge *bridge,
 	max96789_video_timing(priv);
 
 	/* 0x0002: REG2 */
-	mask = VID_TX_EN_X | 0x3;
+	mask = VID_TX_EN_X | AUD_TX_EN_X | 0x3;
 	regmap_update_bits(priv->regmap, MAX96789_REG2, mask, mask);
 }
 
