@@ -2010,7 +2010,7 @@ static unsigned char gaConfig_A2BSlaveNode0WCZ_REGA2B0_Data2[1] =
 
 static unsigned char gaConfig_A2BSlaveNode0WCZ_REGA2B0_Data3[1] =
 {
-	0xE0u	
+	0x60u	
 };
 
 static unsigned char gaConfig_A2BSlaveNode0WCZ_REGA2B0_Data4[1] =
@@ -2065,7 +2065,7 @@ static unsigned char gaConfig_A2BSlaveNode1WBZ_REGA2B0_Data8[1] =
 
 static unsigned char gaConfig_A2BSlaveNode1WBZ_REGA2B0_Data9[1] =
 {
-	0xE0u	
+	0x60u	
 };
 
 static unsigned char gaConfig_A2BSlaveNode1WBZ_REGA2B0_Data10[1] =
