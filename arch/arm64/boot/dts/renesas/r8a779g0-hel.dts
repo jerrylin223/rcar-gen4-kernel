@@ -334,18 +334,16 @@
 	pinctrl-names = "default";
 	phy-handle = <&phy2>;
 	phy-mode = "rgmii-id";
-	rx-internal-delay-ps = <1800>; // For MAC
-	tx-internal-delay-ps = <2000>; // For MAC
 	status = "okay";
-	
+
 	phy2: ethernet-phy@2 {
 		compatible = "ethernet-phy-id001C.CB31",
-		             "ethernet-phy-ieee802.3-c22";
+			     "ethernet-phy-ieee802.3-c22";
 		reg = <1>;
+		set-phy-delay = <1>;
 		interrupt-parent = <&gpio5>;
 		interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
 		reset-gpios = <&gpio5 5 GPIO_ACTIVE_LOW>;
-		set-phy-delay = <0>;
 	};
 };
 
@@ -353,12 +351,14 @@
 	pinctrl-0 = <&tsn0_pins>, <&vddq_eth_pins>;
 	pinctrl-names = "default";
 	phy-handle = <&phy3>;
-	tx-internal-delay;
+	phy-mode = "rgmii-id";
 	status = "okay";
 
 	phy3: ethernet-phy@3 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <0>;
+		compatible = "ethernet-phy-id001C.CB31",
+			     "ethernet-phy-ieee802.3-c22";
+		reg = <1>;
+		set-phy-delay = <1>;
 		interrupt-parent = <&gpio4>;
 		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
 		reset-gpios = <&gpio1 23 GPIO_ACTIVE_LOW>;
@@ -595,7 +595,7 @@
 		#gpio-cells = <2>;
 
 		compatible = "maxim,max96724";
-		reg = <0x4e>, <0x01>, <0x02>, <0x03>, <0x04>;
+		reg = <0x4e>, <0x03>, <0x04>, <0x05>, <0x06>;
 		gpios = <&U10 0 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 
@@ -725,7 +725,7 @@
 		#gpio-cells = <2>;
 
 		compatible = "maxim,max96724";
-		reg = <0x4f>, <0x05>, <0x06>, <0x07>, <0x08>;
+		reg = <0x4f>, <0x07>, <0x08>, <0x09>, <0x0A>;
 		gpios = <&U16 0 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 
@@ -782,9 +782,9 @@
 				reg = <0>;
 				status = "okay";
 
-				camera@51 {
+				camera@55 {
 					compatible = FALCON_CAMERA;
-					reg = <0x51>;
+					reg = <0x55>;
 
 					port {
 						fakra_con4: endpoint {
@@ -800,9 +800,9 @@
 				reg = <1>;
 				status = "okay";
 
-				camera@52 {
+				camera@56 {
 					compatible = FALCON_CAMERA;
-					reg = <0x52>;
+					reg = <0x56>;
 
 					port {
 						fakra_con5: endpoint {
@@ -818,9 +818,9 @@
 				reg = <2>;
 				status = "okay";
 
-				camera@53 {
+				camera@57 {
 					compatible = FALCON_CAMERA;
-					reg = <0x53>;
+					reg = <0x57>;
 
 					port {
 						fakra_con6: endpoint {
@@ -836,9 +836,9 @@
 				reg = <3>;
 				status = "okay";
 
-				camera@54 {
+				camera@58 {
 					compatible = FALCON_CAMERA;
-					reg = <0x54>;
+					reg = <0x58>;
 
 					port {
 						fakra_con7: endpoint {
@@ -946,11 +946,11 @@
 		gpio-line-names = "USB5V_EN_SOC ", "IO_PCIE_CWAKE", "IO_PCIE_BP   ", "CP30         ", "CP32         ", "CP33         ", "CP35         ", "CP37         ";
 
 
-//		usb5.0v-en-soc {
-//			gpio-hog;
-//			gpios = <0 GPIO_ACTIVE_HIGH>;
-//			output-high;
-//		};
+		usb5.0v-en-soc {
+			gpio-hog;
+			gpios = <0 GPIO_ACTIVE_HIGH>;
+			output-high;
+		};
 	};
 };
 
