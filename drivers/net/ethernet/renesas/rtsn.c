@@ -556,6 +556,9 @@ static int rtsn_get_phy_params(struct rtsn_private *priv)
 		priv->speed = 100;
 		break;
 	case PHY_INTERFACE_MODE_RGMII:
+	case PHY_INTERFACE_MODE_RGMII_ID:
+	case PHY_INTERFACE_MODE_RGMII_RXID:
+	case PHY_INTERFACE_MODE_RGMII_TXID:
 		priv->speed = 1000;
 		break;
 	default:
@@ -577,6 +580,9 @@ static void rtsn_set_phy_interface(struct rtsn_private *priv)
 	 *  but it has internal GMII-RGMII converter.
 	 */
 	case PHY_INTERFACE_MODE_RGMII:
+	case PHY_INTERFACE_MODE_RGMII_ID:
+	case PHY_INTERFACE_MODE_RGMII_RXID:
+	case PHY_INTERFACE_MODE_RGMII_TXID:
 		val = MPIC_PIS_GMII;
 		break;
 	default:
@@ -1082,6 +1088,8 @@ static int rtsn_hwstamp_set(struct net_device *ndev, struct ifreq *req)
 
 static int rtsn_do_ioctl(struct net_device *ndev, struct ifreq *req, int cmd)
 {
+	struct phy_device *phydev = ndev->phydev;
+
 	if (!netif_running(ndev))
 		return -EINVAL;
 
@@ -1094,7 +1102,7 @@ static int rtsn_do_ioctl(struct net_device *ndev, struct ifreq *req, int cmd)
 		break;
 	}
 
-	return 0;
+	return phy_mii_ioctl(phydev, req, cmd);
 }
 
 static const struct net_device_ops rtsn_netdev_ops = {
