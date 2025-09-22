@@ -810,9 +810,6 @@ static int max96712_preinit(struct max96712_priv *priv)
 
 	max96712_update_bits(priv, MAX96712_PWR1, BIT(6), BIT(6));
 	usleep_range(10000, 20000);
-
-	max96712_write_reg(priv, MAX96712_REG1, 0xCC); // DIS_LOC_CC_P2
-	usleep_range(10000, 20000);
 	
 	if (priv->dev_id == MAX96724_ID || priv->dev_id == MAX96724F_ID || priv->dev_id == MAX96724R_ID) {
 		max96712_write_reg(priv, 0x0309, 0x84);
@@ -820,6 +817,8 @@ static int max96712_preinit(struct max96712_priv *priv)
 		max96712_write_reg(priv, 0x030C, 0x63);
 		max96712_write_reg(priv, 0x030D, 0x0C);
 	} else {
+		max96712_write_reg(priv, MAX96712_REG1, 0xCC); // DIS_LOC_CC_P2
+		usleep_range(10000, 20000);
 		max96712_write_reg(priv, 0x0323, 0x84);
 		max96712_write_reg(priv, 0x0325, 0x0B);
 		max96712_write_reg(priv, 0x0326, 0x63);

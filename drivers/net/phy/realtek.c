@@ -471,6 +471,38 @@ static int rtl9010_set_rgmii_delay_1000M(struct phy_device *phydev)
 	return 0;
 }
 
+static int rtl9010_set_rgmii_delay_100M(struct phy_device *phydev)
+{
+	switch (phydev->interface) {
+    case PHY_INTERFACE_MODE_RGMII_ID:   /* TXDLY + RXDLY */
+		printk("AVB2: Set PHY delay (TXDLY + RXDLY).\n", __FUNCTION__);
+		phy_write(phydev, 27, 0xD04A);    // RX
+		phy_write(phydev, 28, 0x000F);
+		phy_write(phydev, 27, 0xD082);    // TX
+		phy_write(phydev, 28, 0x4080);
+		phy_write(phydev, 27, 0xD084);    // TX
+		phy_write(phydev, 28, 0x0000);
+		break;
+    case PHY_INTERFACE_MODE_RGMII_TXID: /* TXDLY only */
+		printk("AVB2: Set PHY delay (TXDLY).\n", __FUNCTION__);
+		phy_write(phydev, 27, 0xD082);    // TX
+		phy_write(phydev, 28, 0x4080);
+		phy_write(phydev, 27, 0xD084);    // TX
+		phy_write(phydev, 28, 0x0000);
+        break;
+    case PHY_INTERFACE_MODE_RGMII_RXID: /* RXDLY only */
+		printk("AVB2: Set PHY delay (RXID).\n", __FUNCTION__);
+		phy_write(phydev, 27, 0xD04A);    // RX
+		phy_write(phydev, 28, 0x000F);
+        break;
+    case PHY_INTERFACE_MODE_RGMII:
+        break;
+    default:
+        break;
+    }
+	return 0;
+}
+
 static int rtl9010_txrx_speed(struct phy_device *phydev)
 {
 	// Force Speed/Duplex
@@ -501,17 +533,44 @@ static int rtl9010_txrx_speed(struct phy_device *phydev)
 	return 0;
 }
 
+static int rtl9010_parse_dt(struct phy_device *phydev)
+{
+	u32 val;
+	struct device_node *np = phydev->mdio.dev.of_node;
+
+	/* set speed */
+    if (rtl9010_txrx_speed(phydev) != 0) {
+		printk("[ERROR] rtl9010_txrx_speed failed.\n");
+		return -1;
+	} 
+		
+    of_property_read_u32(np, "set-phy-delay", &val);
+	if (val == 0) {
+		printk("AVB2: Set MAC RX/TX delay.\n");
+		return 0;
+	}
+
+	/* set RGMII TX/RX Delay（phy-mode）*/
+    if (phydev->speed == SPEED_1000) {
+		phydev->interface = PHY_INTERFACE_MODE_RGMII_ID;
+		rtl9010_set_rgmii_delay_1000M(phydev);
+	} else if (phydev->speed == SPEED_100) {
+		phydev->interface = PHY_INTERFACE_MODE_RGMII_ID;
+		rtl9010_set_rgmii_delay_100M(phydev);
+	}
+	return 0;
+}
+
 static int rtl9010_config_init(struct phy_device *phydev)
 {
 	int ret;
-	u32 val;
-	struct device_node *np = phydev->mdio.dev.of_node;
 
 	if (phy_write(phydev, MII_BMCR, BMCR_RESET) != 0) {
 		printk("[ERROR] BMCR_RESET failed.\n");
 		return -1;
 	}
 	msleep(20);
+
 	phydev->autoneg = AUTONEG_DISABLE;
 	phydev->speed   = SPEED_1000;
 	phydev->duplex  = DUPLEX_FULL;
@@ -522,22 +581,14 @@ static int rtl9010_config_init(struct phy_device *phydev)
 		return -1;
 	}
 
-	if (rtl9010_txrx_speed(phydev) != 0) {
-		printk("[ERROR] rtl9010_txrx_speed failed.\n");
-		return -1;
-	}
+	/* Include TX / RX delay and speed */
+    if (rtl9010_parse_dt(phydev) != 0) {
+	    printk("[ERROR] rtl9010_parse_dt failed.\n");
+	    return -1;
+	} 
 
-	/* set RGMII TX/RX Delay（phy-mode）*/
-	of_property_read_u32(np, "set-phy-delay", &val);
-	if (val == 1) {
-		printk("[%s] Set PHY RX/TX delay.\n", __FUNCTION__);
-		rtl9010_set_rgmii_delay_1000M(phydev);
-	} else {
-		printk("[%s] Set MAC RX/TX delay.\n", __FUNCTION__);
-	}
+	// phy_write(phydev, MII_BMCR, 0x8000);
 
-	phy_write(phydev, MII_BMCR, 0x8000);
-	msleep(20);
 	/* default page 0x0A42 */
 	phy_write(phydev, RTL9010Bx_PAGSR, 0x0A42);
 
@@ -554,6 +605,19 @@ static int rtl9010_config_aneg(struct phy_device *phydev)
 	/* 設定 Auto-Negotiation，直接用 kernel 提供的 */
 	if (phydev->autoneg == AUTONEG_ENABLE) {
 		return genphy_config_aneg(phydev);
+	}
+
+	if (rtl9010_txrx_speed(phydev) != 0) {
+		printk("[ERROR] rtl9010_txrx_speed failed.\n");
+		return -1;
+	} 
+
+    if (phydev->speed == SPEED_1000) {
+		phydev->interface = PHY_INTERFACE_MODE_RGMII_ID;
+		rtl9010_set_rgmii_delay_1000M(phydev);
+	} else if (phydev->speed == SPEED_100) {
+		phydev->interface = PHY_INTERFACE_MODE_RGMII_ID;
+		rtl9010_set_rgmii_delay_100M(phydev);
 	}
 
 	switch (phydev->master_slave_set) {
