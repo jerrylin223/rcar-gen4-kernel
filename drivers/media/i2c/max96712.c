@@ -1274,6 +1274,17 @@ static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
 	if (priv->bound_sources != priv->source_mask) {
 		return 0;
 	}
+	
+	struct v4l2_ctrl *ser_mbps; 
+    struct v4l2_ctrl *des_mbps;
+    ser_mbps = v4l2_ctrl_find(subdev->ctrl_handler, V4L2_CID_PIXEL_RATE);
+    des_mbps = v4l2_ctrl_find(priv->sd.ctrl_handler, V4L2_CID_PIXEL_RATE);
+
+    if (ser_mbps && des_mbps) {
+		dev_dbg(&priv->client->dev, "Serializer mbps = %d\n", ser_mbps->val);
+		dev_dbg(&priv->client->dev, "MAX96712 mbps = %d\n", des_mbps->val);
+        // v4l2_ctrl_s_ctrl(des_mbps, ser_mbps->val);
+	}
 	return 0;
 }
 
@@ -1327,13 +1338,15 @@ static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 	priv->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
 	v4l2_ctrl_handler_init(&priv->ctrls, 1);
-
-	mbps = 74230000 * bpp;	/* 1920x1020@30Hz, RAW10 bpp = 10 */
 #if DEBUG_COLOR_PATTERN
 	mbps = DEBUG_MBPS;
-#endif
 	v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
-			          1, INT_MAX, 1, mbps);
+					1, INT_MAX, 1, mbps);
+#else
+// 	mbps = 74230000 * bpp;	/* 1920x1020@30Hz, RAW10 bpp = 10 */
+	v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
+			          1, INT_MAX, 1, 1);
+#endif
 	priv->sd.ctrl_handler = &priv->ctrls;
 
 	ret = priv->ctrls.error;
