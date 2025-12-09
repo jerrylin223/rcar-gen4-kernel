@@ -582,7 +582,7 @@
  * I2C1 Function :
  * enable i2c1 and define gmsl serdes
  */
-#define FALCON_CAMERA "maxim,max9295a"
+#define FALCON_CAMERA "maxim,max9295a_c1"	//"maxim,max9295a" for AR0231 Camera
 #define CAM1 0x03
 #define CAM2 0x04
 #define CAM3 0x05
