@@ -29,6 +29,11 @@
 #define DEBUG_COLOR_PATTERN		0
 #define DEBUG_MBPS			200000000
 
+#define CAM_DT MIPI_DT_YUV8	
+//MIPI_DT_RAW10	for AR0233 Camera
+//MIPI_DT_YUV8	for C1 Camera
+
+
 /* 0x01: internal type, 0x02: external type, 0x00: OFF */
 static unsigned int FSYNC_INT_EXT = 0x00;
 module_param_named(fsync_int_ext, FSYNC_INT_EXT, int, 0644);
@@ -932,7 +937,7 @@ static struct {
 } gmsl2_pipe_maps[] = {
 	{0x00,		0x00},		/* FS */
 	{0x01,		0x01},		/* FE */
-	{MIPI_DT_RAW10,	MIPI_DT_RAW10},	/* payload data */
+	{CAM_DT,	CAM_DT},	/* payload data */
 	{0x01,		0x01},		/* FE */
 	{0x01,		0x01},		/* FE */
 };
@@ -1586,7 +1591,7 @@ static int max96712_probe(struct i2c_client *client)
 	}
 
 	priv->client = client;
-	priv->dt = MIPI_DT_RAW10;
+	priv->dt = CAM_DT;
 	priv->stream_count = 0;
 
 	of_property_read_u32_array(np, "reg", addrs, ARRAY_SIZE(addrs));

@@ -1353,6 +1353,14 @@ config VIDEO_MAXIM_MAX9295A
 	help
 	  This driver supports the LI-AR0231-AP0200-GMSL2 with MAX9295A.
 
+config VIDEO_MAXIM_MAX9295A_C1
+	tristate "MAX9295A C1 camera support"
+	depends on I2C && VIDEO_V4L2_SUBDEV_API && MEDIA_CONTROLLER
+	select V4L2_FWNODE
+	help
+	  This driver supports the C1 Camera with MAX9295A.
+
+
 config VIDEO_ADP1653
 	tristate "ADP1653 flash support"
 	depends on I2C && VIDEO_V4L2
