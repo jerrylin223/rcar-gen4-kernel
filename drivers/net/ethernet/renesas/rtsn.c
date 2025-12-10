@@ -822,7 +822,27 @@ static void rtsn_adjust_link(struct net_device *ndev)
 	/* FIXME: Support this feature */
 
 	phy_print_status(phydev);
-	priv->link = phydev->link;
+
+	if (phydev->link) {
+		if (phydev->speed != priv->speed) {
+			rtsn_change_mode(priv, OCR_OPC_DISABLE);
+			/* Change to CONFIG mode */
+			rtsn_change_mode(priv, OCR_OPC_CONFIG);
+
+			priv->speed = phydev->speed;
+			rtsn_set_rate(priv);
+
+			rtsn_change_mode(priv, OCR_OPC_DISABLE);
+			/* Change to OPERATION mode */
+			rtsn_change_mode(priv, OCR_OPC_OPERATION);
+		}
+		if (!priv->link) {
+			priv->link = phydev->link;
+		}
+	} else if (priv->link) {
+		priv->link = 0;
+		priv->speed = 0;
+	}
 }
 
 static int rtsn_phy_init(struct rtsn_private *priv)
@@ -876,12 +896,12 @@ static int rtsn_init(struct rtsn_private *priv)
 	if (ret)
 		goto out_free_desc;
 
-	/* HW initialization */
-	ret = rtsn_hw_init(priv);
+	ret = rtsn_mii_register(priv);
 	if (ret)
 		goto out_free_desc;
 
-	ret = rtsn_mii_register(priv);
+	/* HW initialization */
+	ret = rtsn_hw_init(priv);
 	if (ret)
 		goto out_free_desc;
 
