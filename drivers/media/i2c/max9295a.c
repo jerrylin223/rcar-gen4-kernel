@@ -17,9 +17,13 @@
 
 #define CAMERA_WIDTH		1920
 #define CAMERA_HEIGHT		1020
-#define CAMERA_FORMAT		MEDIA_BUS_FMT_Y10_1X10
+#define CAMERA_FORMAT		MEDIA_BUS_FMT_YUYV10_2X10	//MEDIA_BUS_FMT_Y10_1X10
+#define CAMERA_FPS			30
 #define MAX9295A_N_PADS     1
 #define MAX9295A_SRC_PAD    0
+
+#define TOTAL_WIDTH(w)      ((w) * 120 / 100)
+#define TOTAL_HEIGHT(h)     ((h) * 110 / 100)
 
 struct max9295a_priv {
 	struct i2c_client        *client;
@@ -177,7 +181,7 @@ static int max9295a_set_fmt(struct v4l2_subdev *sd,
 	case MEDIA_BUS_FMT_YVYU8_2X8:
 		break;
 	default:
-		format->format.code = MEDIA_BUS_FMT_Y10_1X10;
+		format->format.code = MEDIA_BUS_FMT_YUYV10_2X10;	//MEDIA_BUS_FMT_Y10_1X10;
 		break;
 	}
 	format->format.width  = CAMERA_WIDTH;

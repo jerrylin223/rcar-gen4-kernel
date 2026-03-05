@@ -40,6 +40,10 @@ struct max96712_source {
 	struct v4l2_subdev *sd;
 	struct fwnode_handle *fwnode;
 	bool linkup;
+	
+	unsigned int width;
+	unsigned int height;
+	u32 code;
 };
 
 #define asd_to_max96712_source(_asd) \
@@ -858,11 +862,10 @@ static struct {
 	int in_dt;
 	int out_dt;
 } gmsl2_pipe_maps[] = {
-	{0x00,		0x00},		/* FS */
-	{0x01,		0x01},		/* FE */
 	{MIPI_DT_RAW10,	MIPI_DT_RAW10},	/* payload data */
-	{0x01,		0x01},		/* FE */
-	{0x01,		0x01},		/* FE */
+	{0x00,		0x00},		/* FS */
+	{0x01,		0x01},		/* FE */	
+
 };
 
 static void max96712_gmsl2_link_pipe_setup(struct max96712_priv *priv,
@@ -873,6 +876,21 @@ static void max96712_gmsl2_link_pipe_setup(struct max96712_priv *priv,
 	int dt = priv->dt; /* must come from imager */
 	int in_vc = 0;
 	int i;
+
+	switch(priv->sources[link_n].code)
+	{
+		case MEDIA_BUS_FMT_YUYV10_2X10:
+		case MEDIA_BUS_FMT_UYVY10_2X10:
+		case MEDIA_BUS_FMT_VYUY10_2X10:
+		case MEDIA_BUS_FMT_YVYU10_2X10:
+		case MEDIA_BUS_FMT_Y10_1X10:
+			dt = MIPI_DT_RAW10;
+			gmsl2_pipe_maps[0].in_dt = dt;
+			gmsl2_pipe_maps[0].out_dt = dt;		
+			break;
+		default:
+			break;
+	}
 
 	max96712_gmsl2_pipe_set_source(priv, pipe, link_n, 0);
 
@@ -1176,6 +1194,7 @@ static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
 	struct v4l2_ctrl *ser_mbps, *des_mbps;
 	unsigned int index = to_index(priv, source);
 	unsigned int src_pad;
+	struct v4l2_subdev_format fmt = { 0 };
 	int ret;
 
 	ret = media_entity_get_fwnode_pad(&subdev->entity,
@@ -1195,12 +1214,26 @@ static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
 				                MEDIA_LNK_FL_ENABLED);	
 	if (ret) {
 		dev_err(&priv->client->dev, "Unable to link %s:%u -> %s:%u\n",
-			    source->sd->name, src_pad, priv->sd.name, index);
+                           source->sd->name, src_pad, priv->sd.name, index);
 		return ret;
 	}
 
 	dev_dbg(&priv->client->dev, "Bound %s pad: %u on index %u\n",
-		    subdev->name, src_pad, index);
+                   subdev->name, src_pad, index);
+
+	//get Ser format
+	fmt.pad = 0; 
+	fmt.which = V4L2_SUBDEV_FORMAT_ACTIVE;
+
+	ret = v4l2_subdev_call(subdev, pad, get_fmt, NULL, &fmt);
+	if (ret) {
+		dev_err(&priv->client->dev, "Failed to get format from %s[%u]\n", subdev->name, index);
+	} else {
+		source->width = fmt.format.width;
+		source->height = fmt.format.height;
+		source->code = fmt.format.code;
+	}	
+
 
 	if (priv->bound_sources != priv->source_mask) {
 		return 0;
