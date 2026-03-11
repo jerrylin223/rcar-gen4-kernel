@@ -22,8 +22,8 @@
 #define MAX9295A_N_PADS     1
 #define MAX9295A_SRC_PAD    0
 
-#define TOTAL_WIDTH(w)      ((w) * 120 / 100)
-#define TOTAL_HEIGHT(h)     ((h) * 110 / 100)
+#define TOTAL_WIDTH(w)      ((w) * 160 / 100)
+#define TOTAL_HEIGHT(h)     ((h) * 170 / 100)
 
 struct max9295a_priv {
 	struct i2c_client        *client;
@@ -248,7 +248,7 @@ static int max9295a_v4l2_subdev_init(struct max9295a_priv *priv)
 	struct device *dev = &priv->client->dev;
 	struct i2c_client *client = priv->client;
 	struct device_node *np = dev->of_node;
-	unsigned int i, mbps;
+	unsigned int i, pixel_rate;
 	int ret, bpp = 10;
 
 	/* Skip non-max9295a devices. */
@@ -271,9 +271,10 @@ static int max9295a_v4l2_subdev_init(struct max9295a_priv *priv)
 	v4l2_ctrl_handler_init(&priv->ctrls, 0);
 
 	/* 1920x1020@30Hz, RAW10 bpp = 10 */
-	mbps = 74230000 * bpp;	
+	pixel_rate = TOTAL_WIDTH(CAMERA_WIDTH) * TOTAL_HEIGHT(CAMERA_HEIGHT) * CAMERA_FPS;
+	dev_dbg(dev, "MAX9295A calculated pixel rate: %u Hz\n", pixel_rate);
 	v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
-			          1, INT_MAX, 1, mbps);
+			          1, INT_MAX, 1, pixel_rate);
 	priv->sd.ctrl_handler = &priv->ctrls;
 
 	ret = priv->ctrls.error;

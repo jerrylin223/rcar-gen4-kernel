@@ -43,6 +43,7 @@ struct max96712_source {
 	
 	unsigned int width;
 	unsigned int height;
+	unsigned int pixel_rate;
 	u32 code;
 };
 
@@ -97,6 +98,9 @@ struct max96712_priv {
 	bool cphy_connection;
 	int dev_id;
 	unsigned int campw_gpio;
+	struct v4l2_ctrl *pixel_rate_ctrl;
+	unsigned int total_pixel_rate;
+	unsigned int bpp;
 };
 
 static struct max96712_source *next_source(struct max96712_priv *priv,
@@ -708,9 +712,22 @@ static void max96712_gmsl2_initial_setup(struct max96712_priv *priv)
 
 static int max96712_mipi_setup(struct max96712_priv *priv)
 {
-	u32 csi_rate = 1800;
 	unsigned int csi2_lane_cnt = (priv->csi2_data_lanes - 1) << 6;
-
+	u32 per_link_raw_bps = 1800;
+	u32 per_link_bps = 1800;
+	
+	if(priv->total_pixel_rate > 0) {
+		u64 mbps = (u64)priv->total_pixel_rate * priv->bpp;
+		do_div(mbps, priv->csi2_data_lanes * 1000000);
+		do_div(mbps, 2.28);
+		per_link_raw_bps = mbps;
+		per_link_bps = ((per_link_raw_bps + 99) / 100) * 100;
+	}
+ 
+	dev_dbg(&priv->client->dev,"total_pixel_rate = %llu ; lanes = %d ; bpp = %d\n", priv->total_pixel_rate, priv->csi2_data_lanes, priv->bpp);
+	dev_dbg(&priv->client->dev,"per_link_raw_bps = %d\n", per_link_raw_bps);
+	dev_dbg(&priv->client->dev,"per_link_bps = %d\n", per_link_bps);
+	
 	max96712_power(priv, 1);
 
 	regmap_write(priv->regmap, MAX96712_VIDEO_PIPE_EN, 0);
@@ -738,13 +755,13 @@ static int max96712_mipi_setup(struct max96712_priv *priv)
 	}
 
 	regmap_update_bits(priv->regmap, MAX_BACKTOP22(0), 0x3f,
-			             ((csi_rate / 100) & 0x1f) | BIT(5));
+			             ((per_link_bps / 100) & 0x1f) | BIT(5));
 	regmap_update_bits(priv->regmap, MAX_BACKTOP25(0), 0x3f,
-			             ((csi_rate / 100) & 0x1f) | BIT(5));
+			             ((per_link_bps / 100) & 0x1f) | BIT(5));
 	regmap_update_bits(priv->regmap, MAX_BACKTOP28(0), 0x3f,
-			             ((csi_rate / 100) & 0x1f) | BIT(5));
+			             ((per_link_bps / 100) & 0x1f) | BIT(5));
 	regmap_update_bits(priv->regmap, MAX_BACKTOP31(0), 0x3f,
-			             ((csi_rate / 100) & 0x1f) | BIT(5));
+			             ((per_link_bps / 100) & 0x1f) | BIT(5));
 
 	regmap_update_bits(priv->regmap, MAX_MIPI_PHY2, 0xf0, 0xf0);
 	if (priv->phy_pol_inv) {
@@ -1191,7 +1208,7 @@ static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
 {
 	struct max96712_priv *priv = sd_to_max96712(notifier->sd);
 	struct max96712_source *source = asd_to_max96712_source(asd);
-	struct v4l2_ctrl *ser_mbps, *des_mbps;
+	struct v4l2_ctrl *ser_mbps;
 	unsigned int index = to_index(priv, source);
 	unsigned int src_pad;
 	struct v4l2_subdev_format fmt = { 0 };
@@ -1234,22 +1251,29 @@ static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
 		source->code = fmt.format.code;
 	}	
 
+	dev_dbg(&priv->client->dev, "[%s] source->sd (subdev) = %s, priv->sd = %s\n",
+	        __FUNCTION__, source->sd->name, priv->sd.name);
+
+    	ser_mbps = v4l2_ctrl_find(subdev->ctrl_handler, V4L2_CID_PIXEL_RATE);
+	dev_dbg(&priv->client->dev, "[%d] ser_mbps->val = %d\n", index, ser_mbps->val);
+
+	source->pixel_rate = ser_mbps->val;
+	priv->total_pixel_rate += source->pixel_rate;
+	
+	if(max96712_get_bpp(source->code) > priv->bpp)
+		priv->bpp = max96712_get_bpp(source->code);
 
 	if (priv->bound_sources != priv->source_mask) {
 		return 0;
 	}
 
-	dev_dbg(&priv->client->dev, "[%s] source->sd (subdev) = %s, priv->sd = %s\n",
-	        __FUNCTION__, source->sd->name, priv->sd.name);
+#if FAST_STARTUP == 0
+	if (priv->pixel_rate_ctrl) {
+		v4l2_ctrl_s_ctrl_int64(priv->pixel_rate_ctrl, priv->total_pixel_rate);
+		dev_dbg(&priv->client->dev, "Set V4L2_CID_PIXEL_RATE total pixel rate = %llu\n", priv->total_pixel_rate);
+	}		
+#endif
 
-    	ser_mbps = v4l2_ctrl_find(subdev->ctrl_handler, V4L2_CID_PIXEL_RATE);
-    	des_mbps = v4l2_ctrl_find(priv->sd.ctrl_handler, V4L2_CID_PIXEL_RATE);
-
-    if (ser_mbps && des_mbps) {
-		dev_dbg(&priv->client->dev, "Serializer mbps = %d\n", ser_mbps->val);
-		dev_dbg(&priv->client->dev, "MAX96712 mbps = %d\n", des_mbps->val);
-        // v4l2_ctrl_s_ctrl(des_mbps, ser_mbps->val);
-	}
 	return 0;
 }
 
@@ -1296,12 +1320,11 @@ static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 	v4l2_ctrl_handler_init(&priv->ctrls, 1);
 #if DEBUG_COLOR_PATTERN
 	mbps = DEBUG_MBPS;
-	v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
+	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
 					1, INT_MAX, 1, mbps);
 #else
-// 	mbps = 74230000 * bpp;	/* 1920x1020@30Hz, RAW10 bpp = 10 */
-	v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
-			          1, INT_MAX, 1, 1);
+	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
+			          1, INT_MAX, 1, 520000000);
 #endif
 	priv->sd.ctrl_handler = &priv->ctrls;
 
