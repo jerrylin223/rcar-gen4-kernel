@@ -1045,6 +1045,7 @@
 		compatible = "maxim,max96712";
 		reg = <0x49>, <CAM1>, <CAM2>, <CAM3>, <CAM4>;
 		gpios = <&U186 0 GPIO_ACTIVE_HIGH>;
+		campw_gpio = <4>;
 		status = "okay";
 
 		ports {
@@ -1175,6 +1176,7 @@
 		compatible = "maxim,max96712";
 		reg = <0x4b>, <CAM5>, <CAM6>, <CAM7>, <CAM8>;
 		gpios = <&U187 0 GPIO_ACTIVE_HIGH>;
+		campw_gpio = <4>;
 		status = "okay";
 
 		ports {

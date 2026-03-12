@@ -40,6 +40,9 @@
 #define MAX_CROSS_BASE(n)		(0x1c0 + (0x20 * n))
 #define MAX_CROSS(n, m)			(MAX_CROSS_BASE(n) + m)
 
+#define MAX96712_GPIO_BASE		0x300
+#define MAX96712_GPIO(n)		(MAX96712_GPIO_BASE + ((n) * 0x03))
+
 #define MAX_BACKTOP_BASE(bank)		(0x400 + (0x20 * bank))
 #define MAX_BACKTOP1(bank)		(MAX_BACKTOP_BASE(bank) + 0x00)
 #define MAX_BACKTOP11(bank)		(MAX_BACKTOP_BASE(bank) + 0x0a)
