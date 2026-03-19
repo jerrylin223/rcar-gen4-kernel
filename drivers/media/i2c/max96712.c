@@ -26,9 +26,10 @@
 #define MAX96712_SRC_PAD		4
 
 #define DEBUG_REG_DUMP			0
-#define DEBUG_COLOR_PATTERN		0
+#define DEBUG_COLOR_PATTERN		1
 #define DEBUG_MBPS			200000000
-#define FAST_STARTUP            0
+#define DEFAULT_MBPS			520000000
+#define FAST_STARTUP			0
 
 /* 0x01: internal type, 0x02: external type, 0x00: OFF */
 static unsigned int FSYNC_INT_EXT = 0x00;
@@ -96,6 +97,8 @@ struct max96712_priv {
 	struct v4l2_ctrl *pixel_rate_ctrl;
 	unsigned int total_pixel_rate;
 	unsigned int bpp;
+	
+	int test_pattern_mode;
 };
 
 static struct max96712_source *next_source(struct max96712_priv *priv,
@@ -376,6 +379,43 @@ static int max96712_power(struct max96712_priv *priv, int on)
 }
 
 #if DEBUG_COLOR_PATTERN
+
+static int max96712_s_ctrl(struct v4l2_ctrl *ctrl)
+{
+    struct max96712_priv *priv =
+        container_of(ctrl->handler, struct max96712_priv, ctrls);
+
+    switch (ctrl->id) {
+
+    case V4L2_CID_TEST_PATTERN:
+        priv->test_pattern_mode = ctrl->val;
+        return 0;
+
+    default:
+        return 0;
+    }
+}
+
+static const struct v4l2_ctrl_ops max96712_ctrl_ops = {
+    .s_ctrl = max96712_s_ctrl,
+};
+
+static const char * const max96712_test_pattern_menu[] = {
+    "Camera Mode",
+    "Gradient Pattern Mode",
+    "Checkerboard Pattern Mode",
+};
+
+static const struct v4l2_ctrl_config max96712_test_pattern_cfg = {
+    .ops = &max96712_ctrl_ops,
+    .id = V4L2_CID_TEST_PATTERN,
+    .name = "Test Pattern",
+    .type = V4L2_CTRL_TYPE_MENU,
+    .max = 2,
+    .def = 0,
+    .qmenu = max96712_test_pattern_menu,
+};
+
 static int max96712_set_regs(struct max96712_priv *priv,
 			     const struct max96712_reg *regs,
 			     unsigned int nr_regs)
@@ -404,6 +444,15 @@ static int max96712_color_pattern(struct max96712_priv *priv)
 	} else {
 		ret = max96712_set_regs(priv, max96712_color_pattern_dinit,
 				ARRAY_SIZE(max96712_color_pattern_dinit));
+	}
+
+	if(priv->test_pattern_mode == 1)
+	{
+		ret = regmap_write(priv->regmap, 0x1051, 0x20);	//Gradient pattern
+	}
+	else
+	{
+		ret = regmap_write(priv->regmap, 0x1051, 0x10);	//Checkerboard pattern
 	}
 
 	regmap_write(priv->regmap, 0x0006, 0xFF);
@@ -520,36 +569,48 @@ static int max96712_enable(struct v4l2_subdev *sd, int enable)
 
 	if(enable) {
 #if DEBUG_COLOR_PATTERN
-		ret = max96712_set_regs(priv, max96712_out_enable,
-				ARRAY_SIZE(max96712_out_enable));
-#else
-		for (i = 0; i < MAX96712_NUM_GMSL; i++) {
-			pipes_mask = priv->link[i]->pipes_mask;
-			/* Enable link pipes */
-			regmap_update_bits(priv->regmap, MAX96712_VIDEO_PIPE_EN, pipes_mask, pipes_mask);
+		if(priv->test_pattern_mode > 0)
+		{
+			ret = max96712_set_regs(priv, max96712_out_enable,
+					ARRAY_SIZE(max96712_out_enable));
+		}
+		else
+#endif
+		{
+			for (i = 0; i < MAX96712_NUM_GMSL; i++) {
+				pipes_mask = priv->link[i]->pipes_mask;
+				/* Enable link pipes */
+				regmap_update_bits(priv->regmap, MAX96712_VIDEO_PIPE_EN, pipes_mask, pipes_mask);
+			}
+
+			/* CSI output enable */
+			regmap_update_bits(priv->regmap, MAX_BACKTOP12(0), 0x02, 0x02);
+			/* Enable Force all MIPI clocks running */
+			regmap_update_bits(priv->regmap, MAX_MIPI_PHY0, 0x80, 0x80);
 		}
 
-		/* CSI output enable */
-		regmap_update_bits(priv->regmap, MAX_BACKTOP12(0), 0x02, 0x02);
-		/* Enable Force all MIPI clocks running */
-		regmap_update_bits(priv->regmap, MAX_MIPI_PHY0, 0x80, 0x80);
-#endif
 	} else {
 #if DEBUG_COLOR_PATTERN
-		ret = max96712_set_regs(priv, max96712_out_disable,
-				ARRAY_SIZE(max96712_out_disable));
-#else
-		/* Disable Force all MIPI clocks running */
-		regmap_update_bits(priv->regmap, MAX_MIPI_PHY0, 0x80, 0x00);
-		/* CSI output disable */
-		regmap_update_bits(priv->regmap, MAX_BACKTOP12(0), 0x02, 0);
-
-		for (i = 0; i < MAX96712_NUM_GMSL; i++) {
-			pipes_mask = priv->link[i]->pipes_mask;
-			/* Disable link pipes */
-			regmap_update_bits(priv->regmap, MAX96712_VIDEO_PIPE_EN, pipes_mask, 0);
+		if(priv->test_pattern_mode > 0)
+		{
+			ret = max96712_set_regs(priv, max96712_out_disable,
+					ARRAY_SIZE(max96712_out_disable));
 		}
+		else
 #endif
+		{
+			/* Disable Force all MIPI clocks running */
+			regmap_update_bits(priv->regmap, MAX_MIPI_PHY0, 0x80, 0x00);
+			/* CSI output disable */
+			regmap_update_bits(priv->regmap, MAX_BACKTOP12(0), 0x02, 0);
+
+			for (i = 0; i < MAX96712_NUM_GMSL; i++) {
+				pipes_mask = priv->link[i]->pipes_mask;
+				/* Disable link pipes */
+				regmap_update_bits(priv->regmap, MAX96712_VIDEO_PIPE_EN, pipes_mask, 0);
+			}
+		}
+
 	}
 
 	return ret;
@@ -929,8 +990,14 @@ static void max96712_setup(struct max96712_priv *priv)
 	int link = 0;
 
 #if DEBUG_COLOR_PATTERN
-	max96712_color_pattern(priv);
-	return;
+	if(priv->test_pattern_mode > 0)
+	{
+		max96712_color_pattern(priv);
+		for_each_source(priv, source) {
+			source->linkup = false;
+		}				
+		return;
+	}
 #endif
 	max96712_preinit(priv);
 	max96712_gmsl2_initial_setup(priv);
@@ -1261,14 +1328,16 @@ static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 #if DEBUG_COLOR_PATTERN
 	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
 					1, INT_MAX, 1, (unsigned int)DEBUG_MBPS);
+	v4l2_ctrl_new_custom(&priv->ctrls, &max96712_test_pattern_cfg, NULL);
 #else
 	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
-			          1, INT_MAX, 1, 520000000);
+			          1, INT_MAX, 1, (unsigned int)DEFAULT_MBPS);
 #endif
 	priv->sd.ctrl_handler = &priv->ctrls;
 
 	ret = priv->ctrls.error;
 	if (ret) {
+		v4l2_ctrl_handler_free(&priv->ctrls);
 		return ret;
 	}
 
