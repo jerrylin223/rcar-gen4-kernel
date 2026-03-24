@@ -1023,14 +1023,14 @@
  * enable i2c1 and define gmsl serdes
  */
 #define FALCON_CAMERA "maxim,max9295a"
-#define CAM1 0x03
-#define CAM2 0x04
-#define CAM3 0x05
-#define CAM4 0x06
-#define CAM5 0x07
-#define CAM6 0x08
-#define CAM7 0x09
-#define CAM8 0x0A
+#define CAM0 0x03
+#define CAM1 0x04
+#define CAM2 0x05
+#define CAM3 0x06
+#define CAM4 0x07
+#define CAM5 0x08
+#define CAM6 0x09
+#define CAM7 0x0A
 &i2c1 {
 	pinctrl-0 = <&i2c1_pins>;
 	pinctrl-names = "default";
@@ -1043,7 +1043,7 @@
 		#gpio-cells = <2>;
 
 		compatible = "maxim,max96712";
-		reg = <0x49>, <CAM1>, <CAM2>, <CAM3>, <CAM4>;
+		reg = <0x49>, <CAM0>, <CAM1>, <CAM2>, <CAM3>;
 		gpios = <&U186 0 GPIO_ACTIVE_HIGH>;
 		campw_gpio = <4>;
 		status = "okay";
@@ -1091,78 +1091,44 @@
 			};
 		};
 
-		i2c-mux {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			i2c@0 {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				reg = <0>;
-				status = "okay";
-				
-				camera@3 {
-					compatible = FALCON_CAMERA;
-					reg = <CAM1>;
-
-					port {
-						fakra_con0: endpoint {
-							remote-endpoint = <&max96712_in0>;
-						};
+		gmsl-serializer {
+			camera-module@0 {
+				compatible = FALCON_CAMERA;
+				reg = <CAM0>;
+				link-id = <0>;
+				port {
+					fakra_con0: endpoint {
+						remote-endpoint = <&max96712_in0>;
 					};
 				};
 			};
-
-			i2c@1 {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				reg = <1>;
-				status = "okay";
-				
-				camera@4 {
-					compatible = FALCON_CAMERA;
-					reg = <CAM2>;
-
-					port {
-						fakra_con1: endpoint {
-							remote-endpoint = <&max96712_in1>;
-						};
+			camera-module@1 {
+				compatible = FALCON_CAMERA;
+				reg = <CAM1>;
+				link-id = <1>;
+				port {
+					fakra_con1: endpoint {
+						remote-endpoint = <&max96712_in1>;
 					};
 				};
 			};
-
-			i2c@2 {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				reg = <2>;
-				status = "okay";
-				
-				camera@5 {
-					compatible = FALCON_CAMERA;
-					reg = <CAM3>;
-
-					port {
-						fakra_con2: endpoint {
+			camera-module@2 {
+				compatible = FALCON_CAMERA;
+				reg = <CAM2>;
+				link-id = <2>;
+				port {
+					fakra_con2: endpoint {
 						remote-endpoint = <&max96712_in2>;
-						};
 					};
 				};
 			};
-
-			i2c@3 {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				reg = <3>;
-				status = "okay";
-				
-				camera@6 {
-					compatible = FALCON_CAMERA;
-					reg = <CAM4>;
-
-					port {
-						fakra_con3: endpoint {
-							remote-endpoint = <&max96712_in3>;
-						};
+			camera-module@3 {
+				compatible = FALCON_CAMERA;
+				reg = <CAM3>;
+				link-id = <3>;
+				port {
+					fakra_con3: endpoint {
+						remote-endpoint = <&max96712_in3>;
 					};
 				};
 			};
@@ -1174,7 +1140,7 @@
 		#gpio-cells = <2>;
 
 		compatible = "maxim,max96712";
-		reg = <0x4b>, <CAM5>, <CAM6>, <CAM7>, <CAM8>;
+		reg = <0x4b>, <CAM4>, <CAM5>, <CAM6>, <CAM7>;
 		gpios = <&U187 0 GPIO_ACTIVE_HIGH>;
 		campw_gpio = <4>;
 		status = "okay";
@@ -1222,83 +1188,54 @@
 			};
 		};
 
-		i2c-mux {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			i2c@0 {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				reg = <0>;
-				status = "okay";
-				
-				camera@7 {
-					compatible = FALCON_CAMERA;
-					reg = <CAM5>;
-
-					port {
-						fakra_con4: endpoint {
-							remote-endpoint = <&max96712_in4>;
-						};
+		gmsl-serializer {
+			camera-module@4 {
+				compatible = FALCON_CAMERA;
+				reg = <CAM4>;
+				link-id = <0>;
+				port {
+					fakra_con4: endpoint {
+						remote-endpoint = <&max96712_in4>;
 					};
 				};
 			};
-
-			i2c@1 {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				reg = <1>;
-				status = "okay";
-				
-				camera@8 {
-					compatible = FALCON_CAMERA;
-					reg = <CAM6>;
-
-					port {
-						fakra_con5: endpoint {
-							remote-endpoint = <&max96712_in5>;
-						};
+			camera-module@5 {
+				compatible = FALCON_CAMERA;
+				reg = <CAM5>;
+				link-id = <1>;
+				port {
+					fakra_con5: endpoint {
+						remote-endpoint = <&max96712_in5>;
 					};
 				};
 			};
-
-			i2c@2 {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				reg = <2>;
-				status = "okay";
-				
-				camera@9 {
-					compatible = FALCON_CAMERA;
-					reg = <CAM7>;
-
-					port {
-						fakra_con6: endpoint {
-							remote-endpoint = <&max96712_in6>;
-						};
+			camera-module@6 {
+				compatible = FALCON_CAMERA;
+				reg = <CAM6>;
+				link-id = <2>;
+				port {
+					fakra_con6: endpoint {
+						remote-endpoint = <&max96712_in6>;
 					};
 				};
-			};
-
-			i2c@3 {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				reg = <3>;
-				status = "okay";
-				
-				camera@A {
-					compatible = FALCON_CAMERA;
-					reg = <CAM8>;
-
-					port {
-						fakra_con7: endpoint {
-							remote-endpoint = <&max96712_in7>;
-						};
+			
+			};	
+			camera-module@7 {
+				compatible = FALCON_CAMERA;
+				reg = <CAM7>;
+				link-id = <3>;
+				port {
+					fakra_con7: endpoint {
+						remote-endpoint = <&max96712_in7>;
 					};
 				};
+			
 			};
 		};
 	};
+
+
+
 };
 
 &pwm0 {

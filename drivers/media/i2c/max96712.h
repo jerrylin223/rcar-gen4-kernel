@@ -581,39 +581,39 @@ static inline int reg16_write16_addr(struct i2c_client *client, int chip, u16 re
 #define __reg16_write(addr, reg, val)	reg16_write_addr(priv->client, addr, reg, val)
 #define __reg16_write16(addr, reg, val)	reg16_write16_addr(priv->client, addr, reg, val)
 
-struct i2c_mux_priv {
-	struct i2c_adapter adap;
-	struct i2c_algorithm algo;
-	struct i2c_mux_core *muxc;
-	u32 chan_id;
-};
+//struct i2c_mux_priv {
+//	struct i2c_adapter adap;
+//	struct i2c_algorithm algo;
+//	struct i2c_mux_core *muxc;
+//	u32 chan_id;
+//};
 
-static inline int get_des_id(struct i2c_client *client)
-{
-	struct i2c_mux_priv *mux_priv = client->adapter->algo_data;
+//static inline int get_des_id(struct i2c_client *client)
+//{
+//	struct i2c_mux_priv *mux_priv = client->adapter->algo_data;
+//
+//	if (!strcmp(mux_priv->muxc->dev->driver->name, "max9286"))
+//		return MAX9286_ID;
+//	if (!strcmp(mux_priv->muxc->dev->driver->name, "max9288"))
+//		return MAX9288_ID;
+//	if (!strcmp(mux_priv->muxc->dev->driver->name, "max9296"))
+//		return MAX9296A_ID;
+//	if (!strcmp(mux_priv->muxc->dev->driver->name, "max96706"))
+//		return MAX96706_ID;
+//	if (!strcmp(mux_priv->muxc->dev->driver->name, "max96712"))
+//		return MAX96712_ID;
+//	if (!strcmp(mux_priv->muxc->dev->driver->name, "ti9x4"))
+//		return UB960_ID;
+//
+//	return -EINVAL;
+//}
 
-	if (!strcmp(mux_priv->muxc->dev->driver->name, "max9286"))
-		return MAX9286_ID;
-	if (!strcmp(mux_priv->muxc->dev->driver->name, "max9288"))
-		return MAX9288_ID;
-	if (!strcmp(mux_priv->muxc->dev->driver->name, "max9296"))
-		return MAX9296A_ID;
-	if (!strcmp(mux_priv->muxc->dev->driver->name, "max96706"))
-		return MAX96706_ID;
-	if (!strcmp(mux_priv->muxc->dev->driver->name, "max96712"))
-		return MAX96712_ID;
-	if (!strcmp(mux_priv->muxc->dev->driver->name, "ti9x4"))
-		return UB960_ID;
-
-	return -EINVAL;
-}
-
-static inline int get_des_addr(struct i2c_client *client)
-{
-	struct i2c_mux_priv *mux_priv = client->adapter->algo_data;
-
-	return to_i2c_client(mux_priv->muxc->dev)->addr;
-}
+//static inline int get_des_addr(struct i2c_client *client)
+//{
+//	struct i2c_mux_priv *mux_priv = client->adapter->algo_data;
+//
+//	return to_i2c_client(mux_priv->muxc->dev)->addr;
+//}
 
 // static inline void setup_i2c_translator(struct i2c_client *client, int ser_addr,
 // 					int sensor_addr)

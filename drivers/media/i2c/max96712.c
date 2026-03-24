@@ -5,7 +5,6 @@
 #include <linux/gpio/consumer.h>
 #include <linux/gpio/driver.h>
 #include <linux/i2c.h>
-#include <linux/i2c-mux.h>
 #include <linux/regmap.h>
 #include <linux/module.h>
 #include <linux/of_gpio.h>
@@ -71,8 +70,6 @@ static const struct regmap_config max96712_i2c_regmap = {
 struct max96712_priv {
 	struct regmap *regmap;
 	struct i2c_client *client;
-	struct i2c_mux_core *mux;
-	unsigned int mux_channel;
 
 	struct gpio_desc *gpiod_pwdn;
 	struct max96712_link *link[MAX96712_NUM_GMSL];
@@ -86,10 +83,8 @@ struct max96712_priv {
 
 	unsigned int nsources;
 	unsigned int source_mask;
-	unsigned int route_mask;
 	unsigned int bound_sources;
 	unsigned int csi2_data_lanes;
-	bool mux_open;
 	bool phy_pol_inv;
 	int links_mask;
 	int dt;
@@ -577,61 +572,6 @@ static void max96712_debug_dump(struct max96712_priv *priv)
 }
 #endif
 
-/* -----------------------------------------------------------------------------
- * I2C Multiplexer
- */
-static int max96712_i2c_mux_select(struct i2c_mux_core *muxc, u32 chan)
-{
-	struct max96712_priv *priv = i2c_mux_priv(muxc);
-
-	/* Channel select is disabled when configured in the opened state. */
-	if (priv->mux_open) {
-		return 0;
-	}
-
-	if (priv->mux_channel == chan) {
-		return 0;
-	}
-
-	priv->mux_channel = chan;
-
-	return 0;
-}
-
-static int max96712_i2c_mux_init(struct max96712_priv *priv)
-{
-	struct max96712_source *source;
-	int ret;
-
-	if (!i2c_check_functionality(priv->client->adapter,
-				                 I2C_FUNC_SMBUS_WRITE_BYTE_DATA)) {
-		return -ENODEV;
-	}
-
-	priv->mux = i2c_mux_alloc(priv->client->adapter, &priv->client->dev,
-				              priv->nsources, 0, I2C_MUX_LOCKED,
-				              max96712_i2c_mux_select, NULL);
-	if (!priv->mux) {
-		return -ENOMEM;
-	}
-
-	priv->mux->priv = priv;
-
-	for_each_source(priv, source) {
-		unsigned int index = to_index(priv, source);
-
-		ret = i2c_mux_add_adapter(priv->mux, 0, index, 0);
-		if (ret < 0) {
-			goto error;
-		}
-	}
-
-	return 0;
-error:
-	i2c_mux_del_adapters(priv->mux);
-	return ret;
-}
-
 static void max96712_reset_oneshot(struct max96712_priv *priv, int mask)
 {
 	int timeout;
@@ -724,7 +664,7 @@ static int max96712_mipi_setup(struct max96712_priv *priv)
 		per_link_bps = ((per_link_raw_bps + 99) / 100) * 100;
 	}
  
-	dev_dbg(&priv->client->dev,"total_pixel_rate = %llu ; lanes = %d ; bpp = %d\n", priv->total_pixel_rate, priv->csi2_data_lanes, priv->bpp);
+	dev_dbg(&priv->client->dev,"total_pixel_rate = %u ; lanes = %d ; bpp = %d\n", priv->total_pixel_rate, priv->csi2_data_lanes, priv->bpp);
 	dev_dbg(&priv->client->dev,"per_link_raw_bps = %d\n", per_link_raw_bps);
 	dev_dbg(&priv->client->dev,"per_link_bps = %d\n", per_link_bps);
 	
@@ -1270,7 +1210,7 @@ static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
 #if FAST_STARTUP == 0
 	if (priv->pixel_rate_ctrl) {
 		v4l2_ctrl_s_ctrl_int64(priv->pixel_rate_ctrl, priv->total_pixel_rate);
-		dev_dbg(&priv->client->dev, "Set V4L2_CID_PIXEL_RATE total pixel rate = %llu\n", priv->total_pixel_rate);
+		dev_dbg(&priv->client->dev, "Set V4L2_CID_PIXEL_RATE total pixel rate = %u\n", priv->total_pixel_rate);
 	}		
 #endif
 
@@ -1306,7 +1246,7 @@ static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 	struct device *dev = &priv->client->dev;
 	struct i2c_client *client = priv->client;
 	struct fwnode_handle *ep;
-	unsigned int i, mbps;
+	unsigned int i;
 	int ret;
 
 	for (i = 0; i < MAX96712_N_SINKS; i++) {
@@ -1319,9 +1259,8 @@ static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 
 	v4l2_ctrl_handler_init(&priv->ctrls, 1);
 #if DEBUG_COLOR_PATTERN
-	mbps = DEBUG_MBPS;
 	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
-					1, INT_MAX, 1, mbps);
+					1, INT_MAX, 1, (unsigned int)DEBUG_MBPS);
 #else
 	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
 			          1, INT_MAX, 1, 520000000);
@@ -1358,16 +1297,8 @@ static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 		goto err_put_node;
 	}
 
-	ret = max96712_i2c_mux_init(priv);
-	if (ret) {
-		dev_err(dev, "Unable to initialize I2C multiplexer\n");
-		goto err_subdev_unregister;
-	}
-
 	return 0;
 
-err_subdev_unregister:
-	v4l2_async_unregister_subdev(&priv->sd);
 err_put_node:
 	fwnode_handle_put(ep);
 
@@ -1394,10 +1325,10 @@ static void max96712_cleanup_dt(struct max96712_priv *priv)
 static int max96712_parse_dt(struct max96712_priv *priv)
 {
 	struct device *dev = &priv->client->dev;
-	struct device_node *i2c_mux;
+	struct device_node *gmsl_link;
 	struct device_node *node = NULL;
 	struct device_node *np = dev->of_node;
-	unsigned int i2c_mux_mask = 0, val = 0;
+	unsigned int gmsl_link_mask = 0, val = 0;
 	int ret, pwdnb;
 
 	if (of_property_read_bool(np, "maxim,invert_phy-pol")) {
@@ -1415,17 +1346,17 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 	}
 	priv->gpiod_pwdn = gpio_to_desc(pwdnb);
 
-	i2c_mux = of_find_node_by_name(np, "i2c-mux");
-	if (!i2c_mux) {
-		dev_err(dev, "Failed to find i2c-mux node\n");
+	gmsl_link = of_find_node_by_name(np, "gmsl-serializer");
+	if (!gmsl_link) {
+		dev_err(dev, "Failed to find gmsl-serializer node\n");
 		return -EINVAL;
 	}
 
-	/* Identify which i2c-mux channels are enabled */
-	for_each_child_of_node(i2c_mux, node) {
+	/* Identify which channels are enabled */
+	for_each_child_of_node(gmsl_link, node) {
 		u32 id = 0;
 
-		of_property_read_u32(node, "reg", &id);
+		of_property_read_u32(node, "link-id", &id);
 		if (id >= MAX96712_NUM_GMSL) {
 			continue;
 		}
@@ -1435,10 +1366,10 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 			continue;
 		}
 
-		i2c_mux_mask |= BIT(id);
+		gmsl_link_mask |= BIT(id);
 	}
 	of_node_put(node);
-	of_node_put(i2c_mux);
+	of_node_put(gmsl_link);
 
 	v4l2_async_notifier_init(&priv->notifier);
 
@@ -1446,6 +1377,8 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 	for_each_endpoint_of_node(np, node) {
 		struct max96712_source *source;
 		struct of_endpoint ep;
+		struct i2c_client *client;
+		struct i2c_board_info info = { };
 
 		of_graph_parse_endpoint(node, &ep);
 		dev_dbg(dev, "Endpoint %pOF on port %d",
@@ -1492,7 +1425,7 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 		}
 
 		/* Skip if the corresponding GMSL link is unavailable. */
-		if (!(i2c_mux_mask & BIT(ep.port))) {
+		if (!(gmsl_link_mask & BIT(ep.port))) {
 			continue;
 		}
 
@@ -1511,6 +1444,16 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 			continue;
 		}
 
+		info.addr = priv->link[ep.port]->ser_addr;
+		info.of_node = of_graph_get_remote_port_parent(node);
+		client = i2c_new_client_device(priv->client->adapter, &info);
+		if (IS_ERR(client)) {
+			dev_err(dev, "Invalid remote device: port %d\n", ep.port);
+			continue;
+		}
+
+		priv->link[ep.port]->client = client;
+
 		source->asd.match_type = V4L2_ASYNC_MATCH_FWNODE;
 		source->asd.match.fwnode = source->fwnode;
 
@@ -1522,6 +1465,7 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 			return ret;
 		}
 
+
 		priv->source_mask |= BIT(ep.port);
 		priv->nsources++;
 	}
@@ -1532,7 +1476,6 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 		return 0;
 	}
 
-	priv->route_mask = priv->source_mask;
 	priv->notifier.ops = &max96712_notify_ops;
 
 	ret = v4l2_async_subdev_notifier_register(&priv->sd, &priv->notifier);
@@ -1553,6 +1496,8 @@ static int max96712_probe(struct i2c_client *client)
 	int ret;
 	int addrs[5];
 
+
+/* ------------------------------------------------------------------------- */
 	priv = devm_kzalloc(&client->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv) {
 		return -ENOMEM;
@@ -1581,7 +1526,6 @@ static int max96712_probe(struct i2c_client *client)
 		priv->link[i]->ser_addr = addrs[i+1];
 		priv->link[i]->out_mipi = 1;
 		priv->link[i]->out_vc = i;
-		// priv->link[i]->client = i2c_new_dummy_device(client->adapter, addrs[i+1]);
 	}
 	i2c_set_clientdata(client, priv);
 
@@ -1609,24 +1553,22 @@ static int max96712_probe(struct i2c_client *client)
 err_free:
 	max96712_cleanup_dt(priv);
 err_link:
-	// for (i = 0; i < MAX96712_NUM_GMSL; i++) {
-	// 	i2c_unregister_device(priv->link[i]->client);
-	// }
+	 for (i = 0; i < MAX96712_NUM_GMSL; i++) {
+	 	i2c_unregister_device(priv->link[i]->client);
+	 }
 	return ret;
 }
 
 static int max96712_remove(struct i2c_client *client)
 {
 #if FAST_STARTUP == 0
-	//int i;
+	int i;
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 	struct max96712_priv *priv = sd_to_max96712(sd);
 
-	i2c_mux_del_adapters(priv->mux);
-
-	// for (i = 0; i < MAX96712_NUM_GMSL; i++) {
-	// 	i2c_unregister_device(priv->link[i]->client);
-	// }
+	 for (i = 0; i < MAX96712_NUM_GMSL; i++) {
+	 	i2c_unregister_device(priv->link[i]->client);
+	 }
 
 	fwnode_handle_put(priv->sd.fwnode);
 	v4l2_async_unregister_subdev(&priv->sd);
