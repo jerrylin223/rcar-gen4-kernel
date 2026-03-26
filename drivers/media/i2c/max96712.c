@@ -102,18 +102,16 @@ struct max96712_priv {
 };
 
 static struct max96712_source *next_source(struct max96712_priv *priv,
-					                       struct max96712_source *source)
+					   struct max96712_source *source)
 {
-	if (!source) {
+	if (!source)
 		source = &priv->sources[0];
-	} else {
+	else
 		source++;
-	}
 
 	for (; source < &priv->sources[MAX96712_NUM_GMSL]; source++) {
-		if (source->fwnode) {
+		if (source->fwnode)
 			return source;
-		}
 	}
 
 	return NULL;
@@ -342,36 +340,36 @@ const struct max96712_reg max96712_out_enable[] = {
 	{0x08A2, 0x30},        // Turn off unused PHYs
 
 // End of Setup Script - MUST ONE-SHOT RESET!!!! <=================================================
-    {0x0018, 0x0F},        // One shot reset for PHY A - HS86
+	{0x0018, 0x0F},        // One shot reset for PHY A - HS86
 	{0xFFFF, 0xFF}	/* End Table */
 };
 
 const struct max96712_reg max96712_out_disable[] = {
-    {0x08A0, 0x04},         // Disable CSI clock w/ MIPI PHY 2x4 configuration,,
-    {0x08A2, 0x00},         // Stanby mode PHYs
-    {0xFFFF, 0xFF}    // End Table
+	{0x08A0, 0x04},         // Disable CSI clock w/ MIPI PHY 2x4 configuration,,
+	{0x08A2, 0x00},         // Stanby mode PHYs
+	{0xFFFF, 0xFF}    // End Table
 };
 
 static int max96712_power(struct max96712_priv *priv, int on)
 {
-	unsigned int en_reg, val;
+	unsigned int reg, val;
 
-	en_reg = MAX96712_GPIO(priv->campw_gpio);
+	reg = MAX96712_GPIO(priv->campw_gpio);
 
 	regmap_read(priv->regmap, 0x000D, &val);
 	priv->dev_id = val;
 
 	if (priv->campw_gpio && on) {
-		regmap_read(priv->regmap, en_reg, &val);
+		regmap_read(priv->regmap, reg, &val);
 		val &= ~(BIT(7) | BIT(0));
 		val |= BIT(4);		// GPIO1=High=Camemra POC Protector ON
-		regmap_write(priv->regmap, en_reg, val);
+		regmap_write(priv->regmap, reg, val);
 	}
 
 	if(priv->campw_gpio && !on) {
-		regmap_read(priv->regmap, en_reg, &val);
+		regmap_read(priv->regmap, reg, &val);
 		val &= ~BIT(4);
-		regmap_write(priv->regmap, en_reg, val);
+		regmap_write(priv->regmap, reg, val);
 	}
 	mdelay(100);
 
@@ -382,38 +380,37 @@ static int max96712_power(struct max96712_priv *priv, int on)
 
 static int max96712_s_ctrl(struct v4l2_ctrl *ctrl)
 {
-    struct max96712_priv *priv =
-        container_of(ctrl->handler, struct max96712_priv, ctrls);
+	struct max96712_priv *priv = container_of(ctrl->handler,
+	    	    				  struct max96712_priv, ctrls);
+	switch (ctrl->id) {
+	case V4L2_CID_TEST_PATTERN:
+		priv->test_pattern_mode = ctrl->val;
+		break;
+	default:
+		return 0;
+	}
 
-    switch (ctrl->id) {
-
-    case V4L2_CID_TEST_PATTERN:
-        priv->test_pattern_mode = ctrl->val;
-        return 0;
-
-    default:
-        return 0;
-    }
+	return 0;
 }
 
 static const struct v4l2_ctrl_ops max96712_ctrl_ops = {
-    .s_ctrl = max96712_s_ctrl,
+	.s_ctrl = max96712_s_ctrl,
 };
 
 static const char * const max96712_test_pattern_menu[] = {
-    "Camera Mode",
-    "Gradient Pattern Mode",
-    "Checkerboard Pattern Mode",
+	"Camera Mode",
+	"Gradient Pattern Mode",
+	"Checkerboard Pattern Mode",
 };
 
 static const struct v4l2_ctrl_config max96712_test_pattern_cfg = {
-    .ops = &max96712_ctrl_ops,
-    .id = V4L2_CID_TEST_PATTERN,
-    .name = "Test Pattern",
-    .type = V4L2_CTRL_TYPE_MENU,
-    .max = 2,
-    .def = 0,
-    .qmenu = max96712_test_pattern_menu,
+	.ops = &max96712_ctrl_ops,
+	.id = V4L2_CID_TEST_PATTERN,
+	.name = "Test Pattern",
+	.type = V4L2_CTRL_TYPE_MENU,
+	.max = 2,
+	.def = 0,
+	.qmenu = max96712_test_pattern_menu,
 };
 
 static int max96712_set_regs(struct max96712_priv *priv,
@@ -438,22 +435,17 @@ static int max96712_color_pattern(struct max96712_priv *priv)
 
 	max96712_power(priv, 1);
 
-	if(priv->cphy_connection) {
+	if(priv->cphy_connection)
 		ret = max96712_set_regs(priv, max96712_color_pattern_cinit,
-				ARRAY_SIZE(max96712_color_pattern_cinit));
-	} else {
+					ARRAY_SIZE(max96712_color_pattern_cinit));
+	else
 		ret = max96712_set_regs(priv, max96712_color_pattern_dinit,
-				ARRAY_SIZE(max96712_color_pattern_dinit));
-	}
+					ARRAY_SIZE(max96712_color_pattern_dinit));
 
 	if(priv->test_pattern_mode == 1)
-	{
 		ret = regmap_write(priv->regmap, 0x1051, 0x20);	//Gradient pattern
-	}
 	else
-	{
 		ret = regmap_write(priv->regmap, 0x1051, 0x10);	//Checkerboard pattern
-	}
 
 	regmap_write(priv->regmap, 0x0006, 0xFF);
 	regmap_write(priv->regmap, 0x0010, 0x22);
@@ -464,6 +456,7 @@ static int max96712_color_pattern(struct max96712_priv *priv)
 
 	if (priv->dev_id == MAX96712_ID)
 		regmap_write(priv->regmap, 0x0009, 0x02);
+
 	regmap_write(priv->regmap, 0x08A0, 0x84);
 	regmap_write(priv->regmap, 0x08A2, 0x30);
 	regmap_write(priv->regmap, 0x0018, 0x0F);
@@ -474,7 +467,10 @@ static int max96712_color_pattern(struct max96712_priv *priv)
 
 static void max96712_internal_fsync(struct max96712_priv *priv)
 {
-	/* Method: manual, Internal GMSL2 generator mode: 00, source of FSYNC: Des. */
+	/* 
+	 * Method: manual, Internal GMSL2 generator mode: 00,
+	 * source of FSYNC: Des.
+	 */
 	regmap_write(priv->regmap, MAX96712_FSYNC_0,  0x04);  
 	
 	/* Turn off auto master link selection */
@@ -493,16 +489,15 @@ static void max96712_internal_fsync(struct max96712_priv *priv)
 	
 	/* fsync_period = 25 MHz / 30fps */		   
 	priv->fsync_period = 25000000 / 30;	      
-	regmap_write(priv->regmap, MAX96712_FSYNC_5, (priv->fsync_period >>  0) & 0xFF); /* Fsync Period L */
-	regmap_write(priv->regmap, MAX96712_FSYNC_6, (priv->fsync_period >>  8) & 0xFF); /* Fsync Period M */
-	regmap_write(priv->regmap, MAX96712_FSYNC_7, (priv->fsync_period >> 16) & 0xFF); /* Fsync Period H */
+	regmap_write(priv->regmap, MAX96712_FSYNC_5,
+		     (priv->fsync_period >>  0) & 0xFF); /* Fsync Period L */
+	regmap_write(priv->regmap, MAX96712_FSYNC_6,
+		     (priv->fsync_period >>  8) & 0xFF); /* Fsync Period M */
+	regmap_write(priv->regmap, MAX96712_FSYNC_7,
+		     (priv->fsync_period >> 16) & 0xFF); /* Fsync Period H */
 
 	/* FSYNC_TX GPIO ID = 8 */
 	regmap_write(priv->regmap, MAX96712_FSYNC_17, 0x40);
-	
-	///* Enable GPIO_RX_EN on  Ser. MAX9295A side MFPX */
-	
-	//////////////////////
 }
 
 static void max96712_external_fsync(struct max96712_priv *priv)
@@ -536,14 +531,10 @@ static void max96712_external_fsync(struct max96712_priv *priv)
 
 static void max96712_gmsl2_fsync_setup(struct max96712_priv *priv)
 {
-	if (FSYNC_INT_EXT == 0x01) {
-		/* From another MAX96712 */
-		max96712_internal_fsync(priv);
-	}
-	else if (FSYNC_INT_EXT == 0x02) {
-		/* From SoC */
-		max96712_external_fsync(priv);
-	}
+	if (FSYNC_INT_EXT == 0x01)
+		max96712_internal_fsync(priv); /* From another MAX96712 */
+	else if (FSYNC_INT_EXT == 0x02)
+		max96712_external_fsync(priv); /* From SoC */
 	
 	//// AR0231's ISP
 	//if (FSYNC_INT_EXT == 0x02)
@@ -569,48 +560,43 @@ static int max96712_enable(struct v4l2_subdev *sd, int enable)
 
 	if(enable) {
 #if DEBUG_COLOR_PATTERN
-		if(priv->test_pattern_mode > 0)
-		{
+		if (priv->test_pattern_mode > 0) {
 			ret = max96712_set_regs(priv, max96712_out_enable,
-					ARRAY_SIZE(max96712_out_enable));
+						ARRAY_SIZE(max96712_out_enable));
+			return ret;
 		}
-		else
 #endif
-		{
-			for (i = 0; i < MAX96712_NUM_GMSL; i++) {
-				pipes_mask = priv->link[i]->pipes_mask;
-				/* Enable link pipes */
-				regmap_update_bits(priv->regmap, MAX96712_VIDEO_PIPE_EN, pipes_mask, pipes_mask);
-			}
-
-			/* CSI output enable */
-			regmap_update_bits(priv->regmap, MAX_BACKTOP12(0), 0x02, 0x02);
-			/* Enable Force all MIPI clocks running */
-			regmap_update_bits(priv->regmap, MAX_MIPI_PHY0, 0x80, 0x80);
+		for (i = 0; i < MAX96712_NUM_GMSL; i++) {
+			pipes_mask = priv->link[i]->pipes_mask;
+			/* Enable link pipes */
+			regmap_update_bits(priv->regmap, MAX96712_VIDEO_PIPE_EN,
+					   pipes_mask, pipes_mask);
 		}
+
+		/* CSI output enable */
+		regmap_update_bits(priv->regmap, MAX_BACKTOP12(0), 0x02, 0x02);
+		/* Enable Force all MIPI clocks running */
+		regmap_update_bits(priv->regmap, MAX_MIPI_PHY0, 0x80, 0x80);
 
 	} else {
 #if DEBUG_COLOR_PATTERN
-		if(priv->test_pattern_mode > 0)
-		{
+		if(priv->test_pattern_mode > 0) {
 			ret = max96712_set_regs(priv, max96712_out_disable,
-					ARRAY_SIZE(max96712_out_disable));
+						ARRAY_SIZE(max96712_out_disable));
+			return ret;
 		}
-		else
 #endif
-		{
-			/* Disable Force all MIPI clocks running */
-			regmap_update_bits(priv->regmap, MAX_MIPI_PHY0, 0x80, 0x00);
-			/* CSI output disable */
-			regmap_update_bits(priv->regmap, MAX_BACKTOP12(0), 0x02, 0);
+		/* Disable Force all MIPI clocks running */
+		regmap_update_bits(priv->regmap, MAX_MIPI_PHY0, 0x80, 0x00);
+		/* CSI output disable */
+		regmap_update_bits(priv->regmap, MAX_BACKTOP12(0), 0x02, 0);
 
-			for (i = 0; i < MAX96712_NUM_GMSL; i++) {
-				pipes_mask = priv->link[i]->pipes_mask;
-				/* Disable link pipes */
-				regmap_update_bits(priv->regmap, MAX96712_VIDEO_PIPE_EN, pipes_mask, 0);
-			}
+		for (i = 0; i < MAX96712_NUM_GMSL; i++) {
+			pipes_mask = priv->link[i]->pipes_mask;
+			/* Disable link pipes */
+			regmap_update_bits(priv->regmap, MAX96712_VIDEO_PIPE_EN,
+					   pipes_mask, 0);
 		}
-
 	}
 
 	return ret;
@@ -628,8 +614,8 @@ static void max96712_debug_dump(struct max96712_priv *priv)
 
 	for (i = 0; i < 0x1000; i += 16)
 		printk("0x%04x\t%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n",
-			i, valu[i], valu[i+1], valu[i+2], valu[i+3], valu[i+4], valu[i+5], valu[i+6], valu[i+7], valu[i+8],
-			valu[i+9], valu[i+10], valu[i+11], valu[i+12], valu[i+13], valu[i+14], valu[i+15]);
+			i, valu[i], valu[i+1], valu[i+2], valu[i+3], valu[i+4], valu[i+5], valu[i+6], valu[i+7],
+			valu[i+8], valu[i+9], valu[i+10], valu[i+11], valu[i+12], valu[i+13], valu[i+14], valu[i+15]);
 }
 #endif
 
@@ -644,16 +630,14 @@ static void max96712_reset_oneshot(struct max96712_priv *priv, int mask)
 	/* wait for one-shot bit self-cleared */
 	for (timeout = 0; timeout < 100; timeout++) {
 		regmap_read(priv->regmap, MAX96712_CTRL1, &val);
-		if (!(val & mask)) {
+		if (!(val & mask))
 			break;
-		}
 
 		mdelay(1);
 	}
 
-	if (val & mask) {
+	if (val & mask)
 		dev_err(&priv->client->dev, "Failed reset oneshot 0x%x\n", mask);
-	}
 }
 
 static void max96712_postinit(struct max96712_priv *priv)
@@ -672,8 +656,9 @@ static int max96712_preinit(struct max96712_priv *priv)
 
 	regmap_write(priv->regmap, MAX96712_REG1, 0xCC); // DIS_LOC_CC_P2
 	usleep_range(10000, 20000);
-	
-	if (priv->dev_id == MAX96724_ID || priv->dev_id == MAX96724F_ID || priv->dev_id == MAX96724R_ID) {
+
+	if (priv->dev_id == MAX96724_ID || priv->dev_id == MAX96724F_ID ||
+	    priv->dev_id == MAX96724R_ID) {
 		regmap_write(priv->regmap, 0x0309, 0x84);
 		regmap_write(priv->regmap, 0x030B, 0x0B);
 		regmap_write(priv->regmap, 0x030C, 0x63);
@@ -713,7 +698,8 @@ static void max96712_gmsl2_initial_setup(struct max96712_priv *priv)
 
 static int max96712_mipi_setup(struct max96712_priv *priv)
 {
-	unsigned int csi2_lane_cnt = (priv->csi2_data_lanes - 1) << 6;
+	struct device dev = priv->client->dev;
+	unsigned int lane_cnt = (priv->csi2_data_lanes - 1) << 6;
 	u32 per_link_raw_bps = 1800;
 	u32 per_link_bps = 1800;
 	
@@ -725,9 +711,10 @@ static int max96712_mipi_setup(struct max96712_priv *priv)
 		per_link_bps = ((per_link_raw_bps + 99) / 100) * 100;
 	}
  
-	dev_dbg(&priv->client->dev,"total_pixel_rate = %u ; lanes = %d ; bpp = %d\n", priv->total_pixel_rate, priv->csi2_data_lanes, priv->bpp);
-	dev_dbg(&priv->client->dev,"per_link_raw_bps = %d\n", per_link_raw_bps);
-	dev_dbg(&priv->client->dev,"per_link_bps = %d\n", per_link_bps);
+	dev_dbg(&dev, "total_pixel_rate = %u ; lanes = %d ; bpp = %d\n",
+		priv->total_pixel_rate, priv->csi2_data_lanes, priv->bpp);
+	dev_dbg(&dev,"per_link_raw_bps = %d\n", per_link_raw_bps);
+	dev_dbg(&dev,"per_link_bps = %d\n", per_link_bps);
 	
 	max96712_power(priv, 1);
 
@@ -744,30 +731,29 @@ static int max96712_mipi_setup(struct max96712_priv *priv)
 	}
 
 	if (priv->cphy_connection) {
-		regmap_write(priv->regmap, MAX_MIPI_TX10(1), csi2_lane_cnt | BIT(5));
-		regmap_write(priv->regmap, MAX_MIPI_TX10(2), csi2_lane_cnt | BIT(5));
+		regmap_write(priv->regmap, MAX_MIPI_TX10(1), lane_cnt | BIT(5));
+		regmap_write(priv->regmap, MAX_MIPI_TX10(2), lane_cnt | BIT(5));
 		regmap_write(priv->regmap, MAX_MIPI_PHY13, 0x3F);
 		regmap_write(priv->regmap, MAX_MIPI_PHY14, 0x7D);
 	} else {
-		regmap_write(priv->regmap, MAX_MIPI_TX10(1), csi2_lane_cnt);
-		regmap_write(priv->regmap, MAX_MIPI_TX10(2), csi2_lane_cnt);
+		regmap_write(priv->regmap, MAX_MIPI_TX10(1), lane_cnt);
+		regmap_write(priv->regmap, MAX_MIPI_TX10(2), lane_cnt);
 		regmap_write(priv->regmap, MAX_MIPI_TX3(1), 0x07);
 		regmap_write(priv->regmap, MAX_MIPI_TX3(2), 0x07);
 	}
 
 	regmap_update_bits(priv->regmap, MAX_BACKTOP22(0), 0x3f,
-			             ((per_link_bps / 100) & 0x1f) | BIT(5));
+			   ((per_link_bps / 100) & 0x1f) | BIT(5));
 	regmap_update_bits(priv->regmap, MAX_BACKTOP25(0), 0x3f,
-			             ((per_link_bps / 100) & 0x1f) | BIT(5));
+			   ((per_link_bps / 100) & 0x1f) | BIT(5));
 	regmap_update_bits(priv->regmap, MAX_BACKTOP28(0), 0x3f,
-			             ((per_link_bps / 100) & 0x1f) | BIT(5));
+			   ((per_link_bps / 100) & 0x1f) | BIT(5));
 	regmap_update_bits(priv->regmap, MAX_BACKTOP31(0), 0x3f,
-			             ((per_link_bps / 100) & 0x1f) | BIT(5));
+			   ((per_link_bps / 100) & 0x1f) | BIT(5));
 
 	regmap_update_bits(priv->regmap, MAX_MIPI_PHY2, 0xf0, 0xf0);
-	if (priv->phy_pol_inv) {
+	if (priv->phy_pol_inv)
 		regmap_write(priv->regmap, MAX_MIPI_PHY5, 0x10);
-	}
 
 	usleep_range(10000, 20000);
 
@@ -777,7 +763,7 @@ static int max96712_mipi_setup(struct max96712_priv *priv)
 static int max96712_gmsl2_get_link_lock(struct max96712_priv *priv, int link_n)
 {
 	unsigned int lock_reg[] = {MAX96712_CTRL3, MAX96712_CTRL12,
-			          MAX96712_CTRL13, MAX96712_CTRL14};
+				   MAX96712_CTRL13, MAX96712_CTRL14};
 	unsigned int val;
 	regmap_read(priv->regmap, lock_reg[link_n], &val);
 
@@ -785,8 +771,8 @@ static int max96712_gmsl2_get_link_lock(struct max96712_priv *priv, int link_n)
 }
 
 static void max96712_pipe_override(struct max96712_priv *priv,
-				                   unsigned int pipe,
-				                   unsigned int dt, unsigned int vc)
+				   unsigned int pipe, unsigned int dt,
+				   unsigned int vc)
 {
 	int bpp, bank;
 
@@ -798,82 +784,84 @@ static void max96712_pipe_override(struct max96712_priv *priv,
 	case 0:
 		/* Pipe X: 0 or 4 */
 		regmap_update_bits(priv->regmap, MAX_BACKTOP12(bank), 0x1f << 3,
-				             bpp << 3);
+				   bpp << 3);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP13(bank), 0x0f, vc);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP15(bank), 0x3f, dt);
 		regmap_update_bits(priv->regmap, bank ? MAX_BACKTOP28(0) :
-				             MAX_BACKTOP22(0), BIT(6), BIT(6));
+				   MAX_BACKTOP22(0), BIT(6), BIT(6));
 		break;
 	case 1:
 		/* Pipe Y: 1 or 5 */
 		regmap_update_bits(priv->regmap, MAX_BACKTOP18(bank), 0x1f, bpp);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP13(bank), 0x0f << 4,
-				             vc << 4);
+				   vc << 4);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP16(bank), 0x0f,
-				             dt & 0x0f);
+				   dt & 0x0f);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP15(bank), 0x03 << 6,
-				             (dt & 0x30) << 2);
+				   (dt & 0x30) << 2);
 		regmap_update_bits(priv->regmap, bank ? MAX_BACKTOP28(0) :
-				             MAX_BACKTOP22(0), BIT(7), BIT(7));
+				   MAX_BACKTOP22(0), BIT(7), BIT(7));
 		break;
 	case 2:
 		/* Pipe Z: 2 or 6 */
 		regmap_update_bits(priv->regmap, MAX_BACKTOP19(bank), 0x03,
-				             bpp & 0x03);
+				   bpp & 0x03);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP18(bank), 0xe0,
-				             (bpp & 0x1c) << 3);
+				   (bpp & 0x1c) << 3);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP14(bank), 0x0f, vc);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP17(bank), 0x03,
-				             dt & 0x03);
+				   dt & 0x03);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP16(bank), 0x0f << 4,
-				             (dt & 0x3c) << 2);
+				   (dt & 0x3c) << 2);
 		regmap_update_bits(priv->regmap, bank ? MAX_BACKTOP30(0) :
-				             MAX_BACKTOP25(0), BIT(6), BIT(6));
+				   MAX_BACKTOP25(0), BIT(6), BIT(6));
 		break;
 	case 3:
 		/* Pipe U: 3 or 7 */
 		regmap_update_bits(priv->regmap, MAX_BACKTOP19(bank), 0xfc,
-				             bpp << 2);
+				   bpp << 2);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP14(bank), 0x0f << 4,
-				             vc << 4);
+				   vc << 4);
 		regmap_update_bits(priv->regmap, MAX_BACKTOP17(bank), 0x3f << 2,
-				             dt << 2);
+				   dt << 2);
 		regmap_update_bits(priv->regmap, bank ? MAX_BACKTOP30(0) :
-				             MAX_BACKTOP25(0), BIT(7), BIT(7));
+				   MAX_BACKTOP25(0), BIT(7), BIT(7));
 		break;
 	}
 }
 
 static void max96712_mapping_pipe_to_mipi(struct max96712_priv *priv,
-					  					  unsigned int pipe,
-					  					  unsigned int map_n,
-					  					  unsigned int in_dt,
-					  					  unsigned int in_vc,
-					 					  unsigned int out_dt,
-					 					  unsigned int out_vc,
-					 					  unsigned int out_mipi)
+					  unsigned int pipe,
+					  unsigned int map_n,
+					  unsigned int in_dt,
+					  unsigned int in_vc,
+					  unsigned int out_dt,
+					  unsigned int out_vc,
+					  unsigned int out_mipi)
 {
 	int offset = 2 * (map_n % 4);
 	regmap_write(priv->regmap, MAX_MIPI_MAP_SRC(pipe, map_n),
-			           (in_vc << 6) | in_dt);
+		     (in_vc << 6) | in_dt);
 	regmap_write(priv->regmap, MAX_MIPI_MAP_DST(pipe, map_n),
-			           (out_vc << 6) | out_dt);
+		     (out_vc << 6) | out_dt);
 	regmap_update_bits(priv->regmap, MAX_MIPI_MAP_DST_PHY(pipe, map_n / 4),
-			             0x03 << offset, out_mipi << offset);
+			   0x03 << offset, out_mipi << offset);
 	/* enable SRC_n to DST_n mapping */
-	regmap_update_bits(priv->regmap, MAX_MIPI_TX11(pipe), BIT(map_n), BIT(map_n));
-	regmap_update_bits(priv->regmap, MAX_MIPI_TX11(pipe), BIT(map_n), BIT(map_n));
+	regmap_update_bits(priv->regmap, MAX_MIPI_TX11(pipe), BIT(map_n),
+			   BIT(map_n));
+	regmap_update_bits(priv->regmap, MAX_MIPI_TX11(pipe), BIT(map_n),
+			   BIT(map_n));
 
 	usleep_range(10000, 20000);
 }
 
 static void max96712_gmsl2_pipe_set_source(struct max96712_priv *priv,
-					                       int pipe, int phy, int in_pipe)
+					   int pipe, int phy, int in_pipe)
 {
 	int offset = (pipe % 2) * 4;
-	regmap_update_bits(priv->regmap, MAX96712_VIDEO_PIPE_SEL(pipe / 2),
-			     0x0f << offset, (phy << (offset + 2)) |
-			     (in_pipe << offset));
+	regmap_update_bits(priv->regmap,
+			   MAX96712_VIDEO_PIPE_SEL(pipe / 2), 0x0f << offset,
+			   (phy << (offset + 2)) | (in_pipe << offset));
 }
 
 static struct {
@@ -887,7 +875,7 @@ static struct {
 };
 
 static void max96712_gmsl2_link_pipe_setup(struct max96712_priv *priv,
-					                       int link_n)
+					   int link_n)
 {
 	struct max96712_link *link = priv->link[link_n];
 	int pipe = link_n; /* straight mapping */
@@ -895,8 +883,7 @@ static void max96712_gmsl2_link_pipe_setup(struct max96712_priv *priv,
 	int in_vc = 0;
 	int i;
 
-	switch(priv->sources[link_n].code)
-	{
+	switch(priv->sources[link_n].code) {
 		case MEDIA_BUS_FMT_YUYV10_2X10:
 		case MEDIA_BUS_FMT_UYVY10_2X10:
 		case MEDIA_BUS_FMT_VYUY10_2X10:
@@ -923,17 +910,15 @@ static void max96712_gmsl2_link_pipe_setup(struct max96712_priv *priv,
 	for (i = 0; i < ARRAY_SIZE(gmsl2_pipe_maps); i++) {
 		max96712_mapping_pipe_to_mipi(priv, pipe, i,
 					      gmsl2_pipe_maps[i].in_dt,
-					      in_vc,
-					      gmsl2_pipe_maps[i].out_dt,
-					      link->out_vc,
-					      link->out_mipi);
+					      in_vc, gmsl2_pipe_maps[i].out_dt,
+					      link->out_vc, link->out_mipi);
 	}
 
 	link->pipes_mask |= BIT(pipe);
 }
 
 static int max96712_gmsl2_reverse_channel_setup(struct max96712_priv *priv,
-						                        int link_n)
+						int link_n)
 {
 	struct max96712_link *link = priv->link[link_n];
 	int ser_addrs[] = {0x40, 0x42, 0x60, 0x62};
@@ -941,7 +926,8 @@ static int max96712_gmsl2_reverse_channel_setup(struct max96712_priv *priv,
 	int ret = 0;
 	int val = 0, i, j = 0;
 
-	regmap_update_bits(priv->regmap, MAX96712_REG6, 0xff, 0xf0 | BIT(link_n));
+	regmap_update_bits(priv->regmap, MAX96712_REG6, 0xff,
+			   0xf0 | BIT(link_n));
 	max96712_reset_oneshot(priv, BIT(link_n));
 
 	/*
@@ -990,12 +976,11 @@ static void max96712_setup(struct max96712_priv *priv)
 	int link = 0;
 
 #if DEBUG_COLOR_PATTERN
-	if(priv->test_pattern_mode > 0)
-	{
+	if(priv->test_pattern_mode > 0) {
 		max96712_color_pattern(priv);
-		for_each_source(priv, source) {
+		for_each_source(priv, source)
 			source->linkup = false;
-		}				
+
 		return;
 	}
 #endif
@@ -1003,19 +988,18 @@ static void max96712_setup(struct max96712_priv *priv)
 	max96712_gmsl2_initial_setup(priv);
 	max96712_mipi_setup(priv);
 	
-	if (FSYNC_INT_EXT != 0x00) {
+	if (FSYNC_INT_EXT != 0x00)
 		max96712_gmsl2_fsync_setup(priv);
-	}
 		
 	/* Start all cameras. */
 	for_each_source(priv, source) {
 		max96712_gmsl2_link_pipe_setup(priv, link);
 		ret = max96712_gmsl2_reverse_channel_setup(priv, link);
-		if (ret < 0) {
+		if (ret < 0)
 			source->linkup = false;
-		} else {
+		else
 			source->linkup = true;
-		}
+
 		link++;
 	}
 
@@ -1028,49 +1012,35 @@ static void max96712_setup(struct max96712_priv *priv)
 static int max96712_s_stream(struct v4l2_subdev *sd, int enable)
 {
 	int ret;
-	// int link = 0;
-
 	struct max96712_priv *priv = sd_to_max96712(sd);
 	struct max96712_source *source;
 
 	if (enable && priv->stream_count == 0) {
-	#if FAST_STARTUP == 0
-		max96712_setup(priv);
-		max96712_postinit(priv);
-	#endif
+		if (!FAST_STARTUP) {
+			max96712_setup(priv);
+			max96712_postinit(priv);
+		}
 
 		for_each_source(priv, source) {
-			if (!source->linkup) {
-				// link++;
+			if (!source->linkup)
 				continue;
-			}
 
-			if (source->linkup) {
-				// max9295a_sensor_set_regs(priv, link);
-			}
-			// link++;
-
-			ret = v4l2_subdev_call(source->sd, video,
-					               s_stream, 1);
-			if (ret) {
+			ret = v4l2_subdev_call(source->sd, video, s_stream, 1);
+			if (ret)
 				return ret;
-			}
 		}
-	} else if (!enable && priv->stream_count == 1) {
-	#if FAST_STARTUP == 0
+	} else if (!enable && priv->stream_count == 1 && !FAST_STARTUP) {
 		max96712_power(priv, 0);
 
 		/* Stop all cameras. */
 		for_each_source(priv, source) {
-			if (!source->linkup) {
+			if (!source->linkup)
 				continue;
-			}
 
 			v4l2_subdev_call(source->sd, video, s_stream, 0);
 		}
 		gpiod_direction_output_raw(priv->gpiod_pwdn, 0);
 		gpiod_direction_output_raw(priv->gpiod_pwdn, 1);
-	#endif
 	}
 
 	priv->stream_count += enable ? 1 : -1;
@@ -1082,12 +1052,11 @@ static int max96712_s_stream(struct v4l2_subdev *sd, int enable)
  * V4L2 Subdev ops
  */
 static int max96712_enum_mbus_code(struct v4l2_subdev *sd,
-				                   struct v4l2_subdev_pad_config *cfg,
-				                   struct v4l2_subdev_mbus_code_enum *code)
+				   struct v4l2_subdev_pad_config *cfg,
+				   struct v4l2_subdev_mbus_code_enum *code)
 {
-	if (code->pad || code->index > 0) {
+	if (code->pad || code->index > 0)
 		return -EINVAL;
-	}
 
 	code->code = MEDIA_BUS_FMT_Y10_1X10;
 
@@ -1096,8 +1065,8 @@ static int max96712_enum_mbus_code(struct v4l2_subdev *sd,
 
 static struct v4l2_mbus_framefmt *
 max96712_get_pad_format(struct max96712_priv *priv,
-		                struct v4l2_subdev_pad_config *cfg,
-		                unsigned int pad, u32 which)
+			struct v4l2_subdev_pad_config *cfg,
+			unsigned int pad, u32 which)
 {
 	switch (which) {
 	case V4L2_SUBDEV_FORMAT_TRY:
@@ -1110,15 +1079,14 @@ max96712_get_pad_format(struct max96712_priv *priv,
 }
 
 static int max96712_set_fmt(struct v4l2_subdev *sd,
-			                struct v4l2_subdev_pad_config *cfg,
-			                struct v4l2_subdev_format *format)
+			    struct v4l2_subdev_pad_config *cfg,
+			    struct v4l2_subdev_format *format)
 {
 	struct max96712_priv *priv = sd_to_max96712(sd);
-	struct v4l2_mbus_framefmt *cfg_fmt;
+	struct v4l2_mbus_framefmt *fmt;
 
-	if (format->pad >= MAX96712_SRC_PAD) {
+	if (format->pad >= MAX96712_SRC_PAD)
 		return -EINVAL;
-	}
 
 	/* Refuse non YUV422 formats as we hardcode DT to 8 bit YUV422 */
 	switch (format->format.code) {
@@ -1132,31 +1100,30 @@ static int max96712_set_fmt(struct v4l2_subdev *sd,
 		break;
 	}
 
-	cfg_fmt = max96712_get_pad_format(priv, cfg, format->pad, format->which);
-	if (!cfg_fmt) {
+	fmt = max96712_get_pad_format(priv, cfg, format->pad, format->which);
+	if (!fmt)
 		return -EINVAL;
-	}
-	*cfg_fmt = format->format;
+
+	*fmt = format->format;
 
 	return 0;
 }
 
 static int max96712_get_fmt(struct v4l2_subdev *sd,
-			                struct v4l2_subdev_pad_config *cfg,
-			                struct v4l2_subdev_format *format)
+			    struct v4l2_subdev_pad_config *cfg,
+			    struct v4l2_subdev_format *format)
 {
 	struct max96712_priv *priv = sd_to_max96712(sd);
-	struct v4l2_mbus_framefmt *cfg_fmt;
+	struct v4l2_mbus_framefmt *fmt;
 
-	if (format->pad >= MAX96712_SRC_PAD) {
+	if (format->pad >= MAX96712_SRC_PAD)
 		return -EINVAL;
-	}
 
-	cfg_fmt = max96712_get_pad_format(priv, cfg, format->pad, format->which);
-	if (!cfg_fmt) {
+	fmt = max96712_get_pad_format(priv, cfg, format->pad, format->which);
+	if (!fmt)
 		return -EINVAL;
-	}
-	format->format = *cfg_fmt;
+
+	format->format = *fmt;
 
 	return 0;
 }
@@ -1191,12 +1158,12 @@ static void max96712_init_format(struct v4l2_mbus_framefmt *fmt)
 
 static int max96712_open(struct v4l2_subdev *subdev, struct v4l2_subdev_fh *fh)
 {
-	struct v4l2_mbus_framefmt *format;
+	struct v4l2_mbus_framefmt *fmt;
 	unsigned int i;
 
 	for (i = 0; i < MAX96712_N_SINKS; i++) {
-		format = v4l2_subdev_get_try_format(subdev, fh->pad, i);
-		max96712_init_format(format);
+		fmt = v4l2_subdev_get_try_format(subdev, fh->pad, i);
+		max96712_init_format(fmt);
 	}
 
 	return 0;
@@ -1210,10 +1177,11 @@ static const struct v4l2_subdev_internal_ops max96712_subdev_internal_ops = {
  * V4L2 Subdev bound
  */
 static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
-				                 struct v4l2_subdev *subdev,
-				                 struct v4l2_async_subdev *asd)
+				 struct v4l2_subdev *subdev,
+				 struct v4l2_async_subdev *asd)
 {
 	struct max96712_priv *priv = sd_to_max96712(notifier->sd);
+	struct device dev = priv->client->dev;
 	struct max96712_source *source = asd_to_max96712_source(asd);
 	struct v4l2_ctrl *ser_mbps;
 	unsigned int index = to_index(priv, source);
@@ -1221,12 +1189,10 @@ static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
 	struct v4l2_subdev_format fmt = { 0 };
 	int ret;
 
-	ret = media_entity_get_fwnode_pad(&subdev->entity,
-					  source->fwnode,
+	ret = media_entity_get_fwnode_pad(&subdev->entity, source->fwnode,
 					  MEDIA_PAD_FL_SOURCE);
 	if (ret < 0) {
-		dev_err(&priv->client->dev,
-			"Failed to find pad for %s\n", subdev->name);
+		dev_err(&dev, "Failed to find pad for %s\n", subdev->name);
 		return ret;
 	}
 
@@ -1234,35 +1200,36 @@ static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
 	src_pad = ret;
 	priv->bound_sources |= BIT(index);
 	ret = media_create_pad_link(&source->sd->entity, src_pad,
-				                &priv->sd.entity, index,
-				                MEDIA_LNK_FL_ENABLED);	
+				    &priv->sd.entity, index,
+				    MEDIA_LNK_FL_ENABLED);
+
 	if (ret) {
-		dev_err(&priv->client->dev, "Unable to link %s:%u -> %s:%u\n",
-                           source->sd->name, src_pad, priv->sd.name, index);
+		dev_err(&dev, "Unable to link %s:%u -> %s:%u\n",
+			source->sd->name, src_pad, priv->sd.name, index);
 		return ret;
 	}
 
-	dev_dbg(&priv->client->dev, "Bound %s pad: %u on index %u\n",
-                   subdev->name, src_pad, index);
+	dev_dbg(&dev, "Bound %s pad: %u on index %u\n",
+		subdev->name, src_pad, index);
 
-	//get Ser format
 	fmt.pad = 0; 
 	fmt.which = V4L2_SUBDEV_FORMAT_ACTIVE;
 
 	ret = v4l2_subdev_call(subdev, pad, get_fmt, NULL, &fmt);
 	if (ret) {
-		dev_err(&priv->client->dev, "Failed to get format from %s[%u]\n", subdev->name, index);
+		dev_err(&dev, "Failed to get format from %s[%u]\n",
+			subdev->name, index);
 	} else {
 		source->width = fmt.format.width;
 		source->height = fmt.format.height;
 		source->code = fmt.format.code;
 	}	
 
-	dev_dbg(&priv->client->dev, "[%s] source->sd (subdev) = %s, priv->sd = %s\n",
-	        __FUNCTION__, source->sd->name, priv->sd.name);
+	dev_dbg(&dev, "source->sd (subdev) = %s, priv->sd = %s\n",
+		source->sd->name, priv->sd.name);
 
     	ser_mbps = v4l2_ctrl_find(subdev->ctrl_handler, V4L2_CID_PIXEL_RATE);
-	dev_dbg(&priv->client->dev, "[%d] ser_mbps->val = %d\n", index, ser_mbps->val);
+	dev_dbg(&dev, "[%d] ser_mbps->val = %d\n", index, ser_mbps->val);
 
 	source->pixel_rate = ser_mbps->val;
 	priv->total_pixel_rate += source->pixel_rate;
@@ -1270,23 +1237,22 @@ static int max96712_notify_bound(struct v4l2_async_notifier *notifier,
 	if(max96712_get_bpp(source->code) > priv->bpp)
 		priv->bpp = max96712_get_bpp(source->code);
 
-	if (priv->bound_sources != priv->source_mask) {
+	if (priv->bound_sources != priv->source_mask)
 		return 0;
-	}
 
-#if FAST_STARTUP == 0
-	if (priv->pixel_rate_ctrl) {
-		v4l2_ctrl_s_ctrl_int64(priv->pixel_rate_ctrl, priv->total_pixel_rate);
-		dev_dbg(&priv->client->dev, "Set V4L2_CID_PIXEL_RATE total pixel rate = %u\n", priv->total_pixel_rate);
-	}		
-#endif
+	if (!FAST_STARTUP && priv->pixel_rate_ctrl) {
+		v4l2_ctrl_s_ctrl_int64(priv->pixel_rate_ctrl,
+				       priv->total_pixel_rate);
+		dev_dbg(&dev, "Set V4L2_CID_PIXEL_RATE total pixel rate = %u\n",
+			priv->total_pixel_rate);
+	}
 
 	return 0;
 }
 
 static void max96712_notify_unbind(struct v4l2_async_notifier *notifier,
-				                   struct v4l2_subdev *subdev,
-				                   struct v4l2_async_subdev *asd)
+				   struct v4l2_subdev *subdev,
+				   struct v4l2_async_subdev *asd)
 {
 	struct max96712_source *source = asd_to_max96712_source(asd);
 
@@ -1301,13 +1267,6 @@ static const struct v4l2_async_notifier_operations max96712_notify_ops = {
 /* -----------------------------------------------------------------------------
  * Parse endpoint and subdev setup
  */
-static const struct of_device_id max96712_dt_ids[] = {
-	{ .compatible = "maxim,max96712" },
-	{ .compatible = "maxim,max96724" },
-	{},
-};
-MODULE_DEVICE_TABLE(of, max96712_dt_ids);
-
 static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 {
 	struct device *dev = &priv->client->dev;
@@ -1316,9 +1275,8 @@ static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 	unsigned int i;
 	int ret;
 
-	for (i = 0; i < MAX96712_N_SINKS; i++) {
+	for (i = 0; i < MAX96712_N_SINKS; i++)
 		max96712_init_format(&priv->fmt[i]);
-	}
 
 	v4l2_i2c_subdev_init(&priv->sd, client, &max96712_subdev_ops);
 	priv->sd.internal_ops = &max96712_subdev_internal_ops;
@@ -1326,12 +1284,17 @@ static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 
 	v4l2_ctrl_handler_init(&priv->ctrls, 1);
 #if DEBUG_COLOR_PATTERN
-	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
-					1, INT_MAX, 1, (unsigned int)DEBUG_MBPS);
+	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL,
+						  V4L2_CID_PIXEL_RATE, 1,
+						  INT_MAX, 1,
+						  (unsigned int)DEBUG_MBPS);
+
 	v4l2_ctrl_new_custom(&priv->ctrls, &max96712_test_pattern_cfg, NULL);
 #else
-	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL, V4L2_CID_PIXEL_RATE,
-			          1, INT_MAX, 1, (unsigned int)DEFAULT_MBPS);
+	priv->pixel_rate_ctrl = v4l2_ctrl_new_std(&priv->ctrls, NULL,
+						  V4L2_CID_PIXEL_RATE, 1,
+						  INT_MAX, 1,
+						  (unsigned int)DEFAULT_MBPS);
 #endif
 	priv->sd.ctrl_handler = &priv->ctrls;
 
@@ -1343,35 +1306,30 @@ static int max96712_v4l2_subdev_init(struct max96712_priv *priv)
 
 	priv->sd.entity.function = MEDIA_ENT_F_VID_IF_BRIDGE;
 	priv->pads[MAX96712_SRC_PAD].flags = MEDIA_PAD_FL_SOURCE;
-	for (i = 0; i < MAX96712_N_SINKS; i++) {
+	for (i = 0; i < MAX96712_N_SINKS; i++)
 		priv->pads[i].flags = MEDIA_PAD_FL_SINK;
-	}
 
-	ret = media_entity_pads_init(&priv->sd.entity, MAX96712_N_PADS, priv->pads);
-	if (ret) {
+	ret = media_entity_pads_init(&priv->sd.entity, MAX96712_N_PADS,
+				     priv->pads);
+	if (ret)
 		return ret;
-	}
 
-	ep = fwnode_graph_get_endpoint_by_id(dev_fwnode(dev), MAX96712_SRC_PAD, 0, 0);
+	ep = fwnode_graph_get_endpoint_by_id(dev_fwnode(dev),
+					     MAX96712_SRC_PAD, 0, 0);
 	if (!ep) {
 		dev_err(dev, "Unable to retrieve endpoint on \"port@4\"\n");
-		ret = -ENOENT;
-		return ret;
+		return -ENOENT;
 	}
 	priv->sd.fwnode = ep;
 
 	ret = v4l2_async_register_subdev(&priv->sd);
 	if (ret < 0) {
 		dev_err(dev, "Unable to register subdevice\n");
-		goto err_put_node;
+		fwnode_handle_put(ep);
+		return ret;
 	}
 
 	return 0;
-
-err_put_node:
-	fwnode_handle_put(ep);
-
-	return ret;
 }
 
 static void max96712_cleanup_dt(struct max96712_priv *priv)
@@ -1400,19 +1358,18 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 	unsigned int gmsl_link_mask = 0, val = 0;
 	int ret, pwdnb;
 
-	if (of_property_read_bool(np, "maxim,invert_phy-pol")) {
+	if (of_property_read_bool(np, "maxim,invert_phy-pol"))
 		priv->phy_pol_inv = true;
-	} else {
+	else
 		priv->phy_pol_inv = false;
-	}
 
-	if (!of_property_read_u32(priv->client->dev.of_node, "campw_gpio", &val))
+	if (!of_property_read_u32(dev->of_node, "campw_gpio", &val))
 		priv->campw_gpio = val;
 
 	pwdnb = of_get_gpio(np, 0);
-	if (!gpio_is_valid(pwdnb)) {
+	if (!gpio_is_valid(pwdnb))
 		return -EINVAL;
-	}
+
 	priv->gpiod_pwdn = gpio_to_desc(pwdnb);
 
 	gmsl_link = of_find_node_by_name(np, "gmsl-serializer");
@@ -1426,9 +1383,8 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 		u32 id = 0;
 
 		of_property_read_u32(node, "link-id", &id);
-		if (id >= MAX96712_NUM_GMSL) {
+		if (id >= MAX96712_NUM_GMSL)
 			continue;
-		}
 
 		if (!of_device_is_available(node)) {
 			dev_dbg(dev, "Skipping disabled I2C bus port %u\n", id);
@@ -1455,19 +1411,17 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 
 		if (ep.port > MAX96712_NUM_GMSL) {
 			dev_err(dev, "Invalid endpoint %s on port %d",
-				    of_node_full_name(ep.local_node), ep.port);
+				of_node_full_name(ep.local_node), ep.port);
 			continue;
 		}
 
 		/* For the source endpoint just parse the bus configuration. */
 		if (ep.port == MAX96712_SRC_PAD) {
-			struct v4l2_fwnode_endpoint vep = {
-				.bus_type = 0
-			};
+			struct v4l2_fwnode_endpoint vep = { .bus_type = 0 };
 			int ret;
 
-			ret = v4l2_fwnode_endpoint_parse(
-					of_fwnode_handle(node), &vep);
+			ret = v4l2_fwnode_endpoint_parse(of_fwnode_handle(node),
+							 &vep);
 			if (ret) {
 				of_node_put(node);
 				return ret;
@@ -1476,17 +1430,16 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 			if (vep.bus_type != V4L2_MBUS_CSI2_DPHY &&
 				vep.bus_type != V4L2_MBUS_CSI2_CPHY) {
 				dev_err(dev, "Media bus %u type not supported\n",
-					    vep.bus_type);
+					vep.bus_type);
 				v4l2_fwnode_endpoint_free(&vep);
 				of_node_put(node);
 				return -EINVAL;
 			}
 
-			if (vep.bus_type == V4L2_MBUS_CSI2_CPHY) {
+			if (vep.bus_type == V4L2_MBUS_CSI2_CPHY)
 				priv->cphy_connection = true;
-			} else {
+			else
 				priv->cphy_connection = false;
-			}
 
 			priv->csi2_data_lanes = vep.bus.mipi_csi2.num_data_lanes;
 			v4l2_fwnode_endpoint_free(&vep);
@@ -1494,13 +1447,13 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 		}
 
 		/* Skip if the corresponding GMSL link is unavailable. */
-		if (!(gmsl_link_mask & BIT(ep.port))) {
+		if (!(gmsl_link_mask & BIT(ep.port)))
 			continue;
-		}
 
 		if (priv->sources[ep.port].fwnode) {
-			dev_err(dev, "Multiple port endpoints are not supported: %d",
-				    ep.port);
+			dev_err(dev,
+				"Multiple port endpoints are not supported: %d",
+				ep.port);
 			continue;
 		}
 
@@ -1509,7 +1462,7 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 						of_fwnode_handle(node));
 		if (!source->fwnode) {
 			dev_err(dev, "Endpoint %pOF has no remote endpoint\n",
-				    ep.local_node);
+				ep.local_node);
 			continue;
 		}
 
@@ -1517,7 +1470,8 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 		info.of_node = of_graph_get_remote_port_parent(node);
 		client = i2c_new_client_device(priv->client->adapter, &info);
 		if (IS_ERR(client)) {
-			dev_err(dev, "Invalid remote device: port %d\n", ep.port);
+			dev_err(dev,
+				"Invalid remote device: port %d\n", ep.port);
 			continue;
 		}
 
@@ -1527,13 +1481,12 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 		source->asd.match.fwnode = source->fwnode;
 
 		ret = v4l2_async_notifier_add_subdev(&priv->notifier,
-						                     &source->asd);
+						     &source->asd);
 		if (ret) {
 			v4l2_async_notifier_cleanup(&priv->notifier);
 			of_node_put(node);
 			return ret;
 		}
-
 
 		priv->source_mask |= BIT(ep.port);
 		priv->nsources++;
@@ -1541,16 +1494,15 @@ static int max96712_parse_dt(struct max96712_priv *priv)
 	of_node_put(node);
 
 	/* Do not register the subdev notifier if there are no devices. */
-	if (!priv->nsources) {
+	if (!priv->nsources)
 		return 0;
-	}
 
 	priv->notifier.ops = &max96712_notify_ops;
 
 	ret = v4l2_async_subdev_notifier_register(&priv->sd, &priv->notifier);
-	if (ret) {
+	if (ret)
 		v4l2_async_notifier_cleanup(&priv->notifier);
-	}
+
 	return ret;
 }
 
@@ -1565,19 +1517,16 @@ static int max96712_probe(struct i2c_client *client)
 	int ret;
 	int addrs[5];
 
-
-/* ------------------------------------------------------------------------- */
 	priv = devm_kzalloc(&client->dev, sizeof(*priv), GFP_KERNEL);
-	if (!priv) {
+	if (!priv)
 		return -ENOMEM;
-	}
 
 	for (i = 0; i < MAX96712_NUM_GMSL; i++) {
-		priv->link[i] = devm_kzalloc(&client->dev, sizeof(*priv->link[i]),
-					                 GFP_KERNEL);
-		if (!priv->link[i]) {
+		priv->link[i] = devm_kzalloc(&client->dev,
+					     sizeof(*priv->link[i]),
+					     GFP_KERNEL);
+		if (!priv->link[i])
 			return -ENOMEM;
-		}
 	}
 
 	priv->regmap = devm_regmap_init_i2c(client, &max96712_i2c_regmap);
@@ -1599,57 +1548,61 @@ static int max96712_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, priv);
 
 	ret = max96712_parse_dt(priv);
-	if (ret < 0) {
-		goto err_link;
-	}
+	if (ret < 0)
+		goto err_free_link;
 
 	gpiod_direction_output_raw(priv->gpiod_pwdn, 1);
 
-	dev_dbg(&client->dev, "All max96712 probed: start initialization sequence\n");
+	dev_dbg(&client->dev,
+		"All max96712 probed: start initialization sequence\n");
 
 	ret = max96712_v4l2_subdev_init(priv);
-	if (ret < 0) {
-		goto err_free;
-	}
+	if (ret < 0)
+		goto err_free_dt;
 
-#if FAST_STARTUP == 1
-	max96712_setup(priv);
-	max96712_postinit(priv);
-#endif
+	if (FAST_STARTUP) {
+		max96712_setup(priv);
+		max96712_postinit(priv);
+	}
 
 	return 0;
 
-err_free:
+err_free_dt:
 	max96712_cleanup_dt(priv);
-err_link:
-	 for (i = 0; i < MAX96712_NUM_GMSL; i++) {
+err_free_link:
+	 for (i = 0; i < MAX96712_NUM_GMSL; i++)
 	 	i2c_unregister_device(priv->link[i]->client);
-	 }
+
 	return ret;
 }
 
 static int max96712_remove(struct i2c_client *client)
 {
-#if FAST_STARTUP == 0
 	int i;
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 	struct max96712_priv *priv = sd_to_max96712(sd);
 
-	 for (i = 0; i < MAX96712_NUM_GMSL; i++) {
+	 for (i = 0; i < MAX96712_NUM_GMSL; i++)
 	 	i2c_unregister_device(priv->link[i]->client);
-	 }
 
 	fwnode_handle_put(priv->sd.fwnode);
 	v4l2_async_unregister_subdev(&priv->sd);
 
 	max96712_cleanup_dt(priv);
 	regmap_exit(priv->regmap);
-#endif
+
 	return 0;
 }
 
+static const struct of_device_id max96712_dt_ids[] = {
+	{.compatible = "maxim,max96712"},
+	{.compatible = "maxim,max96724"},
+	{},
+};
+MODULE_DEVICE_TABLE(of, max96712_dt_ids);
+
 static const struct i2c_device_id max96712_id[] = {
-	{ "max96712", 0 },
+	{"max96712", 0},
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, max96712_id);
@@ -1663,7 +1616,6 @@ static struct i2c_driver max96712_i2c_driver = {
 	.remove		= max96712_remove,
 	.id_table	= max96712_id,
 };
-
 module_i2c_driver(max96712_i2c_driver);
 
 MODULE_ALIAS("MAX96712");
