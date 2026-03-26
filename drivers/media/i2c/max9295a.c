@@ -10,6 +10,7 @@
 #include <linux/of_device.h>
 #include <linux/slab.h>
 #include <linux/videodev2.h>
+#include <linux/regmap.h>
 #include <media/v4l2-async.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-subdev.h>
@@ -17,7 +18,7 @@
 
 #define CAMERA_WIDTH		1920
 #define CAMERA_HEIGHT		1020
-#define CAMERA_FORMAT		MEDIA_BUS_FMT_YUYV10_2X10	//MEDIA_BUS_FMT_Y10_1X10
+#define CAMERA_FORMAT		MEDIA_BUS_FMT_YUYV10_2X10
 #define CAMERA_FPS		30
 #define MAX9295A_N_PADS		1
 #define MAX9295A_SRC_PAD	0
@@ -25,8 +26,15 @@
 #define TOTAL_WIDTH(w)		((w) * 160 / 100)
 #define TOTAL_HEIGHT(h)		((h) * 170 / 100)
 
+static const struct regmap_config max9295_i2c_regmap = {
+	.reg_bits = 16,
+	.val_bits = 8,
+	.max_register = 0xFFFF,
+};
+
 struct max9295a_priv {
 	struct i2c_client *client;
+	struct regmap *regmap;
 	struct v4l2_subdev sd;
 	struct media_pad pads[MAX9295A_N_PADS];
 	struct v4l2_mbus_framefmt fmt[MAX9295A_N_PADS];
@@ -40,16 +48,6 @@ static inline struct max9295a_priv *sd_to_max9295a(struct v4l2_subdev *sd)
 	return container_of(sd, struct max9295a_priv, sd);
 }
 
-
-static int __max9295a_write(struct max9295a_priv *priv, u16 reg, u8 val)
-{
-	u8 buf[3] = { reg >> 8, reg & 0xff, val };
-	int ret;
-
-	ret = i2c_master_send(priv->client, buf, 3);
-	return ret < 0 ? ret : 0;
-}
-
 static int max9295a_set_regs(struct max9295a_priv *priv,
 			     const struct max9295a_reg *regs,
 			     unsigned int nr_regs)
@@ -58,28 +56,12 @@ static int max9295a_set_regs(struct max9295a_priv *priv,
 	int ret;
 
 	for (i = 0; i < nr_regs; i++) {
-		ret = __max9295a_write(priv, regs[i].reg, regs[i].val);
-		msleep(5);
+		ret = regmap_write(priv->regmap, regs[i].reg, regs[i].val);
 		if (ret)
 			return ret;
 	}
 
 	return 0;
-}
-
-static int max9295a_sensor_set_regs(struct max9295a_priv *priv)
-{
-	int ret;
-
-	__max9295a_write(priv, 0x0010, 0x21);	/* SW reset */
-	msleep(200);
-
-	/* Program the camera sensor initial configuration. */
-	ret = max9295a_set_regs(priv, configuretable_ar0231,
-				ARRAY_SIZE(configuretable_ar0231));
-	msleep(200);
-	
-	return ret;
 }
 
 static int max9295a_initialize(struct max9295a_priv *priv)
@@ -95,7 +77,10 @@ static int max9295a_s_stream(struct v4l2_subdev *sd, int enable)
 	int ret;
 	
 	if (enable && priv->stream_count == 0) {
-		ret = max9295a_sensor_set_regs(priv);
+		regmap_write(priv->regmap, 0x0010, 0x21);	/* SW reset */
+		msleep(100);
+		ret = max9295a_set_regs(priv, configuretable_ar0231,
+					ARRAY_SIZE(configuretable_ar0231));
 		if (ret) {
 			dev_err(dev, "Failed to max9295a set register\n");
 			return -EINVAL;
@@ -123,8 +108,8 @@ static int max9295a_enum_mbus_code(struct v4l2_subdev *sd,
 
 static struct v4l2_mbus_framefmt *
 max9295a_get_pad_format(struct max9295a_priv *priv,
-		                struct v4l2_subdev_pad_config *cfg,
-		                unsigned int pad, u32 which)
+			struct v4l2_subdev_pad_config *cfg,
+			unsigned int pad, u32 which)
 {
 	switch (which) {
 	case V4L2_SUBDEV_FORMAT_TRY:
@@ -137,23 +122,22 @@ max9295a_get_pad_format(struct max9295a_priv *priv,
 }
 
 static int max9295a_get_fmt(struct v4l2_subdev *sd,
-			                struct v4l2_subdev_pad_config *cfg,
-			                struct v4l2_subdev_format *format)
+			    struct v4l2_subdev_pad_config *cfg,
+			    struct v4l2_subdev_format *format)
 {
-	struct max9295a_priv *priv = sd_to_max9295a(sd);
-	struct v4l2_mbus_framefmt *cfg_fmt = &format->format;
+	struct v4l2_mbus_framefmt *fmt = &format->format;
 
 	if (format->pad >= MAX9295A_N_PADS)
 		return -EINVAL;
 
-	cfg_fmt->width        = CAMERA_WIDTH;
-	cfg_fmt->height       = CAMERA_HEIGHT;
-	cfg_fmt->code         = CAMERA_FORMAT; 
-	cfg_fmt->colorspace   = V4L2_COLORSPACE_SRGB;
-	cfg_fmt->field        = V4L2_FIELD_NONE;
-	cfg_fmt->ycbcr_enc    = V4L2_YCBCR_ENC_DEFAULT;
-	cfg_fmt->quantization = V4L2_QUANTIZATION_DEFAULT;
-	cfg_fmt->xfer_func    = V4L2_XFER_FUNC_DEFAULT;
+	fmt->width        = CAMERA_WIDTH;
+	fmt->height       = CAMERA_HEIGHT;
+	fmt->code         = CAMERA_FORMAT; 
+	fmt->colorspace   = V4L2_COLORSPACE_SRGB;
+	fmt->field        = V4L2_FIELD_NONE;
+	fmt->ycbcr_enc    = V4L2_YCBCR_ENC_DEFAULT;
+	fmt->quantization = V4L2_QUANTIZATION_DEFAULT;
+	fmt->xfer_func    = V4L2_XFER_FUNC_DEFAULT;
 
 	return 0;
 }
@@ -163,7 +147,7 @@ static int max9295a_set_fmt(struct v4l2_subdev *sd,
                             struct v4l2_subdev_format *format)
 {
 	struct max9295a_priv *priv = sd_to_max9295a(sd);
-	struct v4l2_mbus_framefmt *cfg_fmt;
+	struct v4l2_mbus_framefmt *fmt;
 
 	if (format->pad >= MAX9295A_N_PADS)
 		return -EINVAL;
@@ -176,17 +160,17 @@ static int max9295a_set_fmt(struct v4l2_subdev *sd,
 	case MEDIA_BUS_FMT_YVYU8_2X8:
 		break;
 	default:
-		format->format.code = MEDIA_BUS_FMT_YUYV10_2X10;	//MEDIA_BUS_FMT_Y10_1X10;
+		format->format.code = MEDIA_BUS_FMT_YUYV10_2X10;
 		break;
 	}
 	format->format.width  = CAMERA_WIDTH;
 	format->format.height = CAMERA_HEIGHT;
 	
-	cfg_fmt = max9295a_get_pad_format(priv, sd_state, format->pad, format->which);
-	if (!cfg_fmt)
+	fmt = max9295a_get_pad_format(priv, sd_state, format->pad, format->which);
+	if (!fmt)
 		return -EINVAL;
 
-	*cfg_fmt = format->format;
+	*fmt = format->format;
 
 	return 0;
 }
@@ -232,23 +216,12 @@ static const struct v4l2_subdev_internal_ops max9295a_subdev_internal_ops = {
 	.open = max9295a_open,
 };
 
-static const struct of_device_id max9295a_dt_ids[] = {
-	{.compatible = "maxim,max9295a"},
-	{},
-};
-MODULE_DEVICE_TABLE(of, max9295a_dt_ids);
-
 static int max9295a_v4l2_subdev_init(struct max9295a_priv *priv)
 {
 	struct device *dev = &priv->client->dev;
 	struct i2c_client *client = priv->client;
-	struct device_node *np = dev->of_node;
 	unsigned int i, pixel_rate;
-	int ret, bpp = 10;
-
-	/* Skip non-max9295a devices. */
-	if (!np || !of_match_node(max9295a_dt_ids, np))
-		return 0;
+	int ret;
 
 	for (i = 0; i < MAX9295A_N_PADS; i++)
 		max9295a_init_format(&priv->fmt[i]);
@@ -261,7 +234,7 @@ static int max9295a_v4l2_subdev_init(struct max9295a_priv *priv)
 	priv->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
 	/* Optional Ctrl Handler */
-	v4l2_ctrl_handler_init(&priv->ctrls, 0);
+	v4l2_ctrl_handler_init(&priv->ctrls, 1);
 
 	/* 1920x1020@30Hz, RAW10 bpp = 10 */
 	pixel_rate = (TOTAL_WIDTH(CAMERA_WIDTH) * TOTAL_HEIGHT(CAMERA_HEIGHT)
@@ -279,16 +252,10 @@ static int max9295a_v4l2_subdev_init(struct max9295a_priv *priv)
 	priv->pads[MAX9295A_SRC_PAD].flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_pads_init(&priv->sd.entity, MAX9295A_N_PADS,
 				     priv->pads);
-
 	if (ret)
 		return ret;
 
-	/* Find endpoint (fwnode) */
-	priv->fwnode = fwnode_graph_get_next_endpoint(dev_fwnode(dev), NULL);
-	if (!priv->fwnode)
-		dev_warn(dev, "No endpoint found.\n");
-	
-	priv->sd.fwnode = priv->fwnode;
+	priv->sd.fwnode = fwnode_graph_get_next_endpoint(dev_fwnode(dev), NULL);
 
 	/* Register as a V4L2 subdevice for async notifier */
 	ret = v4l2_async_register_subdev(&priv->sd);
@@ -306,9 +273,7 @@ static int max9295a_v4l2_subdev_init(struct max9295a_priv *priv)
 static int max9295a_probe(struct i2c_client *client)
 {
 	struct max9295a_priv *priv;
-	struct device_node *np = client->dev.of_node;
 	int ret;
-	int addrs[1];
 
 	priv = devm_kzalloc(&client->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
@@ -317,7 +282,10 @@ static int max9295a_probe(struct i2c_client *client)
 	priv->client = client;
 	priv->stream_count = 0;
 
-	of_property_read_u32_array(np, "reg", addrs, ARRAY_SIZE(addrs));
+	priv->regmap = devm_regmap_init_i2c(client, &max9295_i2c_regmap);
+	if (IS_ERR(priv->regmap))
+		return dev_err_probe(&client->dev, PTR_ERR(priv->regmap),
+			       	     "Failed to init i2c regmap\n");
 
 	i2c_set_clientdata(client, priv);
 
@@ -334,25 +302,32 @@ static int max9295a_remove(struct i2c_client *client)
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 	struct max9295a_priv *priv = sd_to_max9295a(sd);
 
-	// media_entity_cleanup(&priv->sd.entity);
 	fwnode_handle_put(priv->sd.fwnode);
 	v4l2_async_unregister_subdev(&priv->sd);
+	regmap_exit(priv->regmap);
 	return 0;
 }
 
-static const struct of_device_id max9295a_ids[] = {
+static const struct of_device_id max9295a_of_ids[] = {
 	{.compatible = "maxim,max9295a"},
 	{}
 };
 MODULE_DEVICE_TABLE(of, max9295a_ids);
 
+static const struct i2c_device_id max9295a_ids[] = {
+	{"max9295a", 0},
+	{}
+};
+MODULE_DEVICE_TABLE(i2c, max96712_id);
+
 static struct i2c_driver max9295a_i2c_driver = {
 	.driver	= {
 		.name	= "max9295a",
-		.of_match_table = max9295a_ids,
+		.of_match_table = max9295a_of_ids,
 	},
 	.probe_new	= max9295a_probe,
 	.remove		= max9295a_remove,
+	.id_table	= max9295a_ids,
 };
 module_i2c_driver(max9295a_i2c_driver);
 
