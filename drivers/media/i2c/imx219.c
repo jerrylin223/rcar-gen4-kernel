@@ -804,7 +804,7 @@ static int imx219_enum_mbus_code(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_mbus_code_enum *code)
 {
 	struct imx219 *imx219 = to_imx219(sd);
-
+	
 	if (code->index >= (ARRAY_SIZE(codes) / 4))
 		return -EINVAL;
 
@@ -1086,6 +1086,11 @@ static void imx219_stop_streaming(struct imx219 *imx219)
 	pm_runtime_put(&client->dev);
 }
 
+static int imx219_enable_link(struct v4l2_subdev *sd, int enable)
+{
+	return 0;
+}
+
 static int imx219_set_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct imx219 *imx219 = to_imx219(sd);
@@ -1247,6 +1252,7 @@ static const struct v4l2_subdev_core_ops imx219_core_ops = {
 
 static const struct v4l2_subdev_video_ops imx219_video_ops = {
 	.s_stream = imx219_set_stream,
+	.enable_link = imx219_enable_link,
 };
 
 static const struct v4l2_subdev_pad_ops imx219_pad_ops = {

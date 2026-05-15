@@ -866,6 +866,12 @@ static int rvin_setup(struct rvin_dev *vin)
 			vin->chip_info & RCAR_VIN_R8A779H0_FEATURE)
 			vnmc |= VNMC_INF_RAWX_RGB565;
 		break;
+	case MEDIA_BUS_FMT_SBGGR10_1X10:
+	case MEDIA_BUS_FMT_SGBRG10_1X10:
+	case MEDIA_BUS_FMT_SGRBG10_1X10:
+	case MEDIA_BUS_FMT_SRGGB10_1X10:
+		vnmc |= VNMC_INF_RAWX_RGB565;
+		break;
 	default:
 		break;
 	}
@@ -956,6 +962,12 @@ static int rvin_setup(struct rvin_dev *vin)
 		} else
 			dmr = 0;
 		break;
+	case V4L2_PIX_FMT_SBGGR10:
+	case V4L2_PIX_FMT_SGBRG10:
+	case V4L2_PIX_FMT_SGRBG10:
+	case V4L2_PIX_FMT_SRGGB10:
+		dmr = VNDMR_RMODE_RAW10;
+		break;
 	default:
 		vin_err(vin, "Invalid pixelformat (0x%x)\n",
 			vin->format.pixelformat);
@@ -976,6 +988,7 @@ static int rvin_setup(struct rvin_dev *vin)
 		!(vin->chip_info & RCAR_VIN_R8A779A0_FEATURE) &&
 		!(vin->chip_info & RCAR_VIN_R8A779G0_FEATURE) &&
 		!(vin->chip_info & RCAR_VIN_R8A779H0_FEATURE)) {
+
 		/* Select between CSI-2 and parallel input */
 		if (vin->is_csi)
 			vnmc &= ~VNMC_DPINE;
@@ -1434,6 +1447,22 @@ static int rvin_mc_validate_format(struct rvin_dev *vin, struct v4l2_subdev *sd,
 		break;
 	case MEDIA_BUS_FMT_Y8_1X8:
 		if (vin->format.pixelformat != V4L2_PIX_FMT_GREY)
+			return -EPIPE;
+		break;
+	case MEDIA_BUS_FMT_SBGGR10_1X10:
+		if (vin->format.pixelformat != V4L2_PIX_FMT_SBGGR10)
+			return -EPIPE;
+		break;
+	case MEDIA_BUS_FMT_SGBRG10_1X10:
+		if (vin->format.pixelformat != V4L2_PIX_FMT_SGBRG10)
+			return -EPIPE;
+		break;
+	case MEDIA_BUS_FMT_SGRBG10_1X10:
+		if (vin->format.pixelformat != V4L2_PIX_FMT_SGRBG10)
+			return -EPIPE;
+		break;
+	case MEDIA_BUS_FMT_SRGGB10_1X10:
+		if (vin->format.pixelformat != V4L2_PIX_FMT_SRGGB10)
 			return -EPIPE;
 		break;
 	default:

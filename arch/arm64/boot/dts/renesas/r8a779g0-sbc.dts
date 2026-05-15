@@ -116,19 +116,20 @@
 			};
 		};
 	};
-
-	ov5647_camera_clk: camera_clk {
-		compatible = "fixed-clock";
-		#clock-cells = <0>;
-		clock-frequency = <25000000>;
-//		clock-output-names = "xclk";
-	};
 	
 	imx219_camera_clk: imx219_camera_clk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <24000000>;
 //		clock-output-names = "xclk";
+	};
+	
+	/* Page 29 / CSI_IF_CN / J1 */
+	reg_cam_j: reg-cam-j {
+		compatible = "regulator-fixed";
+		regulator-name = "cam-J";
+		enable-active-high;
+		gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
 	};
 
 	reg_1p8v: regulator-1p8v {
@@ -447,15 +448,25 @@
 	status = "okay";
 	clock-frequency = <400000>;
 	
-	ov5647_camera: ov5647@36 {
-		compatible = "ovti,ov5647";
-		reg = <0x36>;
-		clocks = <&ov5647_camera_clk>;
-
+	imx219_cam0: imx219@10 {
+		compatible = "sony,imx219";
+		reg = <0x10>;
+		clocks = <&imx219_camera_clk>;
+		
+		VANA-supply = <&reg_cam_j>;
+		VDIG-supply = <&reg_cam_j>;
+		VDDL-supply = <&reg_cam_j>;
+		
+		orientation = <2>;
+		rotation = <0>;		
+		//clock-names = "xclk";
+		
 		port@0 {
-			ov5647_camera_out: endpoint {
-				clock-lanes = <0>;
+			imx219_cam0_out: endpoint {
+				clock-noncontinuous;
+				//clock-lanes = <0>;
 				data-lanes = <1 2>;
+				link-frequencies = /bits/ 64 <456000000>;
 				remote-endpoint = <&csi40_in>;
 			};
 		};
@@ -473,15 +484,23 @@
 	status = "okay";
 	clock-frequency = <400000>;
 	
-	imx219_camera: imx219@10 {
+	imx219_cam1: imx219@10 {
 		compatible = "sony,imx219";
 		reg = <0x10>;
 		clocks = <&imx219_camera_clk>;
-		clock-names = "xclk";
+		//clock-names = "xclk";
+
+		VANA-supply = <&reg_cam_j>;
+		VDIG-supply = <&reg_cam_j>;
+		VDDL-supply = <&reg_cam_j>;
+		
+		orientation = <2>;
+		rotation = <0>;	
 
 		port@0 {
-			imx219_camera_out: endpoint {
-				clock-lanes = <0>;
+			imx219_cam1_out: endpoint {
+				clock-noncontinuous;
+				//clock-lanes = <0>;
 				data-lanes = <1 2>;
 				link-frequencies = /bits/ 64 <456000000>;
 				remote-endpoint = <&csi41_in>;
@@ -638,8 +657,8 @@
 			csi40_in: endpoint {
 				bus-type = <MEDIA_BUS_TYPE_CSI2_DPHY>;
 				clock-lanes = <0>;
-				data-lanes = <1 2 3 4>;
-				remote-endpoint = <&ov5647_camera_out>;
+				data-lanes = <1 2>;
+				remote-endpoint = <&imx219_cam0_out>;
 			};
 		};
 	};
@@ -658,8 +677,8 @@
 			csi41_in: endpoint {
 				bus-type = <MEDIA_BUS_TYPE_CSI2_DPHY>;
 				clock-lanes = <0>;
-				data-lanes = <1 2 3 4>;
-				remote-endpoint = <&imx219_camera_out>;
+				data-lanes = <1 2>;
+				remote-endpoint = <&imx219_cam1_out>;
 			};
 		};
 	};
